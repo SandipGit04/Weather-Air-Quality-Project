@@ -74,7 +74,7 @@ if st.button("Forecast AQI"):
 
         # Create Future Dates
         future = model.make_future_dataframe(
-            periods=365,
+            periods=60,
             freq='D'
         )
 
@@ -121,7 +121,7 @@ if st.button("Forecast AQI"):
 
             chart_data = forecast[
                 ["ds", "yhat"]
-            ].tail(365)
+            ].tail(60)
 
             chart_data = chart_data.rename(
                 columns={
