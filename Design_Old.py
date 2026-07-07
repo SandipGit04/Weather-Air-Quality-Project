@@ -113,3 +113,4 @@ if st.button("Forecast AQI"):
 
     except (FileNotFoundError, ValueError) as e:
         st.error(f"Error: {str(e)}")
+        
