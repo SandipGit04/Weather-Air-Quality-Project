@@ -3,9 +3,12 @@ import pandas as pd
 from prophet.serialize import model_from_json
 from datetime import date, timedelta
 import os
+import joblib
 import plotly.graph_objects as go
 import plotly.express as px
+import streamlit.components.v1 as components
 
+weather_df = pd.read_csv("Weather_Pollution_Data.csv")
 # ─────────────────────────────────────────
 # Page Config
 # ─────────────────────────────────────────
@@ -20,6 +23,8 @@ st.set_page_config(
 # Custom CSS — Dark Teal Theme
 # ─────────────────────────────────────────
 st.markdown("""
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
 
@@ -103,13 +108,98 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 /* ── Control Panel ── */
-.control-panel {
-    background: #0d1b2e;
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px;
-    padding: 1.8rem 2rem;
-    margin-bottom: 1.5rem;
+/* ============================================================ */
+/* ── NEW GLASSMORPHISM DASHBOARD METRIC CARDS ADDED HERE ── */
+/* ============================================================ */
+.glass-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:18px;
+    margin-top:10px;
 }
+
+.glass-card {
+    background:linear-gradient(180deg,#13233d,#0d182c);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:22px 16px;
+    transition:.3s;
+    height:220px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    box-shadow:0 0 18px rgba(0,0,0,.25);
+}
+
+.glass-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 0 30px rgba(0,210,211,.15);
+    border-color:#00d2d3;
+}
+
+.icon-circle {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    background: transparent;
+    border: 1px solid;
+}
+
+.glass-title {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 12px;
+}
+
+.glass-value {
+    font-size: 1.7rem; font-weight: 700; margin-bottom: 16px; color: #ffffff;
+}
+
+.glass-badge {
+    font-size: 0.75rem; padding: 4px 12px; border-radius: 20px;
+    margin-bottom: 12px; font-weight: 600;
+}
+
+.glass-footer {
+    margin-top: auto; font-size: 0.75rem; padding: 6px 12px;
+    border-radius: 20px; display: flex; align-items: center; gap: 6px;
+    background-color: rgba(0, 0, 0, 0.2); border: 1px solid;
+}
+
+/* Theme Colors for Glass Cards */
+.g-teal { border-color: rgba(0, 210, 211, 0.3); box-shadow: 0 0 20px rgba(0, 210, 211, 0.05), inset 0 0 10px rgba(0, 210, 211, 0.05); }
+.g-teal .icon-circle { border-color: #00d2d3; color: #00d2d3; box-shadow: 0 0 10px rgba(0, 210, 211, 0.2); }
+.g-teal .glass-title, .g-teal .glass-footer { color: #00d2d3; }
+.g-teal .glass-footer { border-color: rgba(0, 210, 211, 0.2); }
+
+.g-blue { border-color: rgba(52, 152, 219, 0.3); box-shadow: 0 0 20px rgba(52, 152, 219, 0.05), inset 0 0 10px rgba(52, 152, 219, 0.05); }
+.g-blue .icon-circle { border-color: #3498db; color: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); }
+.g-blue .glass-title, .g-blue .glass-footer { color: #3498db; }
+.g-blue .glass-footer { border-color: rgba(52, 152, 219, 0.2); }
+
+.g-purple { border-color: rgba(155, 89, 182, 0.4); box-shadow: 0 0 20px rgba(155, 89, 182, 0.05), inset 0 0 10px rgba(155, 89, 182, 0.1); }
+.g-purple .icon-circle { border-color: #9b59b6; color: #9b59b6; box-shadow: 0 0 10px rgba(155, 89, 182, 0.2); }
+.g-purple .glass-title, .g-purple .glass-footer { color: #9b59b6; }
+.g-purple .glass-footer { border-color: rgba(155, 89, 182, 0.2); }
+
+.g-orange { border-color: rgba(243, 156, 18, 0.4); box-shadow: 0 0 20px rgba(243, 156, 18, 0.05), inset 0 0 10px rgba(243, 156, 18, 0.1); }
+.g-orange .icon-circle { border-color: #f39c12; color: #f39c12; box-shadow: 0 0 10px rgba(243, 156, 18, 0.2); }
+.g-orange .glass-title, .g-orange .glass-footer { color: #f39c12; }
+.g-orange .glass-value { margin-bottom: 8px; }
+.g-orange .glass-footer { border-color: rgba(243, 156, 18, 0.2); }
+
+.g-green { border-color: rgba(46, 204, 113, 0.3); box-shadow: 0 0 20px rgba(46, 204, 113, 0.05), inset 0 0 10px rgba(46, 204, 113, 0.05); }
+.g-green .icon-circle { border-color: #2ecc71; color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.2); }
+.g-green .glass-title { color: #2ecc71; }
+.g-green .glass-value { margin-bottom: 12px; }
+.g-green .glass-badge { background-color: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); margin-top: auto;}
+
+.g-lblue { border-color: rgba(9, 132, 227, 0.3); box-shadow: 0 0 20px rgba(9, 132, 227, 0.05), inset 0 0 10px rgba(9, 132, 227, 0.05); }
+.g-lblue .icon-circle { border-color: #0984e3; color: #0984e3; box-shadow: 0 0 10px rgba(9, 132, 227, 0.2); }
+.g-lblue .glass-title, .g-lblue .glass-footer { color: #0984e3; }
+.g-lblue .glass-footer { border-color: rgba(9, 132, 227, 0.2); }
 
 .panel-label {
     font-size: 0.72rem;
@@ -316,6 +406,8 @@ cities = sorted([
     if f.endswith("_forecast.json")
 ])
 
+city = st.session_state.get('city', cities[0] if cities else "Demo City")
+
 # ─────────────────────────────────────────
 # HERO HEADER
 # ─────────────────────────────────────────
@@ -332,7 +424,7 @@ st.markdown("""
 # ─────────────────────────────────────────
 # CONTROL PANEL
 # ─────────────────────────────────────────
-st.markdown('<div class="control-panel">', unsafe_allow_html=True)
+# Dynamic City Information Dashboard
 st.markdown('<div class="panel-label">📍 Configure your forecast</div>', unsafe_allow_html=True)
 
 col_city, col_date, col_btn = st.columns([2, 2, 1])
@@ -355,6 +447,131 @@ with col_btn:
     forecast_clicked = st.button("⚡ Forecast AQI", use_container_width=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
+# ==========================================================
+# CITY ANALYTICS DASHBOARD
+# ==========================================================
+
+city_info = weather_df[weather_df["City"] == city]
+
+avg_temp = city_info["Temperature"].mean()
+avg_humidity = city_info["Humidity"].mean()
+avg_pm25 = city_info["PM25"].mean()
+avg_aqi = city_info["AQI"].mean()
+records = len(city_info)
+
+dominant_weather = city_info["WeatherCondition"].mode().iloc[0]
+
+category, cat_color, _, _ = get_aqi_category(avg_aqi)
+
+st.markdown(f"""
+<div style="
+background:linear-gradient(180deg,#0f1c30,#0b1627);
+padding:22px;
+border-radius:18px;
+border:1px solid rgba(255,255,255,.08);
+margin-top:25px;
+margin-bottom:30px;
+">
+
+<h3 style="
+margin-top:0;
+margin-bottom:22px;
+color:#00d2d3;
+font-family:'Space Grotesk';
+font-weight:700;
+">
+📊 {city} Historical Analytics Dashboard
+</h3>
+
+<div class="glass-grid">
+
+<div class="glass-card g-teal">
+<div class="icon-circle"><i class="fas fa-temperature-high"></i></div>
+<div class="glass-title">Temperature</div>
+<div class="glass-value">{avg_temp:.1f}°C</div>
+<div class="glass-footer">
+<i class="fas fa-chart-line"></i> Historical Average
+</div>
+</div>
+
+<div class="glass-card g-blue">
+<div class="icon-circle"><i class="fas fa-droplet"></i></div>
+<div class="glass-title">Humidity</div>
+<div class="glass-value">{avg_humidity:.1f}%</div>
+<div class="glass-footer">
+<i class="fas fa-chart-line"></i> Historical Average
+</div>
+</div>
+
+<div class="glass-card g-purple">
+<div class="icon-circle"><i class="fas fa-smog"></i></div>
+<div class="glass-title">PM2.5</div>
+<div class="glass-value">{avg_pm25:.1f}</div>
+<div class="glass-footer">
+<i class="fas fa-wind"></i> µg/m³
+</div>
+</div>
+
+<div class="glass-card g-orange">
+<div class="icon-circle">
+<i class="fas fa-gauge-high"></i>
+</div>
+<div class="glass-title">Average AQI</div>
+<div class="glass-value">{avg_aqi:.0f}</div>
+
+<div class="glass-badge"
+style="
+background:{cat_color};
+color:white;
+">
+{category}
+</div>
+
+</div>
+
+<div class="glass-card g-green">
+<div class="icon-circle">
+<i class="fas fa-cloud"></i>
+</div>
+
+<div class="glass-title">Weather</div>
+<div class="glass-value"
+style="font-size:1.2rem;">
+{dominant_weather}
+</div>
+
+<div class="glass-badge">
+Most Frequent
+</div>
+
+</div>
+
+<div class="glass-card g-lblue">
+
+<div class="icon-circle">
+<i class="fas fa-database"></i>
+</div>
+
+<div class="glass-title">
+Records
+</div>
+
+<div class="glass-value">
+{records}
+</div>
+
+<div class="glass-footer">
+<i class="fas fa-calendar"></i>
+{records} Days
+</div>
+
+</div>
+
+</div>
+
+</div>
+""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # AQI SCALE LEGEND
@@ -388,6 +605,31 @@ if forecast_clicked:
 
             days_ahead = (selected_date - date.today()).days
 
+            # ==============================
+            # AUTO SCROLL TO RESULTS
+            # ==============================
+            st.markdown(
+                '<div id="forecast-results"></div>',
+                unsafe_allow_html=True
+            )
+
+            components.html("""
+                <script>
+                setTimeout(function(){
+                    const result = window.parent.document.getElementById("forecast-results");
+
+                    if(result){
+                        result.scrollIntoView({
+                            behavior:"smooth",
+                            block:"start"
+                        });
+                    }
+                },500);
+                </script>
+                """,
+                height=0,
+            )
+            
             # ── Result Banner ──
             st.markdown(f"""
             <div class="aqi-banner" style="background: linear-gradient(135deg, {color}18, {color}08);
@@ -605,7 +847,7 @@ else:
     # ── Empty State ──
     st.markdown("""
     <div style="text-align:center; padding: 4rem 2rem; color: #334155;">
-        <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.4;">🌫️</div>
+        <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.;">🌫️</div>
         <div style="font-family:'Space Grotesk',sans-serif; font-size:1.1rem; color:#475569; font-weight:500;">
             Select a city and date, then click <span style="color:#00c8aa">Forecast AQI</span>
         </div>
@@ -614,4 +856,3 @@ else:
         </div>
     </div>
     """, unsafe_allow_html=True)
-
