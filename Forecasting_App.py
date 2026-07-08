@@ -763,7 +763,7 @@ if forecast_clicked:
                             block:"start"
                         });
                     }
-                },500);
+                },50);
                 </script>
                 """,
                 height=0,
