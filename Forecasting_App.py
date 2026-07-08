@@ -857,9 +857,9 @@ if forecast_clicked:
             ))
 
             # AQI zone bands (background reference lines)
-            zone_colors = ["#22c55e", "#84cc16", "#f59e0b", "#ef4444"]
-            zone_vals   = [50, 100, 200, 300]
-            zone_names  = ["Good", "Satisfactory", "Moderate", "Poor"]
+            zone_colors = ["#22c55e", "#84cc16", "#f59e0b", "#ef4444", "#9333ea"]
+            zone_vals   = [50, 100, 200, 300, 500]
+            zone_names  = ["Good", "Satisfactory", "Moderate", "Poor", "Severe"]
             for val, col, name in zip(zone_vals, zone_colors, zone_names):
                 fig.add_hline(
                     y=val,
