@@ -768,7 +768,7 @@ if forecast_clicked:
                 """,
                 height=0,
             )
-            
+     
             # ── Result Banner ──
             st.markdown(f"""
             <div class="aqi-banner" style="background: linear-gradient(135deg, {color}18, {color}08);
@@ -991,7 +991,7 @@ else:
             Select a city and date, then click <span style="color:#00c8aa">Forecast AQI</span>
         </div>
         <div style="font-size:0.85rem; color:#334155; margin-top:0.5rem;">
-            Predictions powered by Facebook Prophet time-series model
+            Predictions powered by Meta Prophet time-series model
         </div>
     </div>
     """, unsafe_allow_html=True)
