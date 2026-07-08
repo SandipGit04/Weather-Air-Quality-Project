@@ -481,7 +481,7 @@ color:#00d2d3;
 font-family:'Space Grotesk';
 font-weight:700;
 ">
-📊 {city} Historical Analytics Dashboard
+📊 {city} Historical Overview 🌐
 </h3>
 
 <div class="glass-grid">
