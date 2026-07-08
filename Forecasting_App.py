@@ -120,7 +120,7 @@ html, body, [data-testid="stAppViewContainer"] {
 
 .glass-card {
     background:linear-gradient(180deg,#13233d,#0d182c);
-    border:1px solid rgba(255,255,255,.08);
+    border:3px solid rgba(255,255,255,.08);
     border-radius:16px;
     padding:22px 16px;
     transition:.3s;
@@ -142,10 +142,10 @@ html, body, [data-testid="stAppViewContainer"] {
     width: 50px; height: 50px;
     border-radius: 50%;
     display: flex; justify-content: center; align-items: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin-bottom: 20px;
     background: transparent;
-    border: 1px solid;
+    border: 2px solid;
 }
 
 .glass-title {
@@ -158,14 +158,14 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 .glass-badge {
-    font-size: 0.75rem; padding: 4px 12px; border-radius: 20px;
+    font-size: 0.8rem; padding: 4px 12px; border-radius: 20px;
     margin-bottom: 12px; font-weight: 600;
 }
 
 .glass-footer {
-    margin-top: auto; font-size: 0.75rem; padding: 6px 12px;
+    margin-top: auto; font-size: 0.8rem; padding: 6px 12px;
     border-radius: 20px; display: flex; align-items: center; gap: 6px;
-    background-color: rgba(0, 0, 0, 0.2); border: 1px solid;
+    background-color: rgba(0, 0, 0, 0.2); border: 1.2px solid;
 }
 
 /* Theme Colors for Glass Cards */
@@ -210,23 +210,161 @@ html, body, [data-testid="stAppViewContainer"] {
     margin-bottom: 1rem;
 }
 
-/* ── Streamlit widget overrides ── */
-.stSelectbox > div > div,
-.stDateInput > div > div > input {
-    background-color: #131f35 !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 10px !important;
-    color: #e2e8f0 !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.95rem !important;
+/* ==================
+    SELECTBOX
+   ==================*/
+
+.stSelectbox div[data-baseweb="select"]{
+    border-radius:16px !important;
+    overflow:hidden !important;
 }
 
-.stSelectbox > div > div:hover,
-.stDateInput > div > div > input:hover {
-    border-color: rgba(0, 200, 170, 0.4) !important;
+/* Main Box */
+.stSelectbox div[data-baseweb="select"] > div{
+    background:#1b2942 !important;
+    border:2px solid rgba(24,214,197,.20) !important;
+    border-radius:16px !important;
+    min-height:54px !important;
+    padding:0 14px !important;
+    display:flex !important;
+    align-items:center !important;
+    transition:all .25s ease;
 }
 
-.stSelectbox svg { color: #64748b !important; }
+/* Hover */
+.stSelectbox div[data-baseweb="select"] > div:hover{
+    border:2px solid #18d6c5 !important;
+    box-shadow:
+        0 0 0 2px rgba(24,214,197,.18),
+        0 0 16px rgba(24,214,197,.30);
+
+}
+
+/* Selected */
+.stSelectbox div[data-baseweb="select"] > div:focus-within{
+    border:2px solid #18d6c5 !important;
+    box-shadow:
+        0 0 0 2px rgba(24,214,197,.18),
+        0 0 18px rgba(24,214,197,.35);
+}
+
+/* Text */
+.stSelectbox div[data-baseweb="select"] input{
+    color:#ffffff !important;
+    font-size:15px !important;
+    font-weight:600 !important;
+    caret-color:#18d6c5 !important;
+}
+
+/* Dropdown Arrow */
+.stSelectbox svg{
+    color:#18d6c5 !important;
+    transition:.25s;
+}
+
+/* Optional */
+.stSelectbox svg:hover{
+    color:#4ef3ff !important;
+}
+
+/* Selected Value */
+.stSelectbox div[data-baseweb="select"] span{
+    font-weight:700 !important;
+    font-size:20px !important;
+    color:#ffffff !important;
+}
+
+/* Backup selector for newer BaseWeb versions */
+.stSelectbox div[data-baseweb="select"] div{
+    font-weight:700 !important;
+}
+            
+/* ==================
+    DATE INPUT
+   ================== */
+
+.stDateInput > div{
+    border-radius:16px !important;
+    overflow:hidden !important;
+}
+
+/* Main Box */
+.stDateInput > div > div{
+    background:#1b2942 !important;
+    border:2px solid rgba(24,214,197,.20) !important;
+    border-radius:16px !important;
+    min-height:54px !important;
+    padding:0 14px !important;
+    display:flex !important;
+    align-items:center !important;
+    transition:all .25s ease;
+}
+
+/* Hover */
+.stDateInput > div > div:hover{
+    border:2px solid #18d6c5 !important;
+    box-shadow:
+        0 0 0 2px rgba(24,214,197,.18),
+        0 0 16px rgba(24,214,197,.30);
+}
+
+/* Focus */
+.stDateInput > div > div:focus-within{
+    border:2px solid #18d6c5 !important;
+    box-shadow:
+        0 0 0 2px rgba(24,214,197,.18),
+        0 0 16px rgba(24,214,197,.35);
+}
+
+/* Text */
+.stDateInput input{
+    background:transparent !important;
+    color:#ffffff !important;
+    font-size:15px !important;
+    font-weight:600 !important;
+    padding:0 !important;
+    caret-color:#18d6c5 !important;
+}
+            
+/* Calendar Button */
+.stDateInput button{
+    background:transparent !important;
+    color:#18d6c5 !important;
+    border:none !important;
+    transition:.25s;
+}
+
+.stDateInput button:hover{
+    color:#4ef3ff !important;
+}
+                      
+/* ==================
+    CALENDAR POPUP
+   ================== */
+
+div[role="dialog"]{
+    background:#121d30 !important;
+    border:1px solid rgba(255,255,255,.08) !important;
+    border-radius:18px !important;
+}
+
+div[role="dialog"] *{
+    color:white !important;
+}
+
+div[role="dialog"] button{
+    background:transparent !important;
+    color:white !important;
+}
+
+div[role="dialog"] button:hover{
+    background:#1d2d48 !important;
+}
+
+div[role="dialog"] [aria-selected="true"]{
+    background:#5c9dff !important;
+    border-radius:50% !important;
+}
 
 /* ── Button ── */
 .stButton > button {
@@ -234,9 +372,10 @@ html, body, [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #00c8aa, #0284c7) !important;
     color: #ffffff !important;
     font-family: 'Space Grotesk', sans-serif !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.03em !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.04em !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,.25) !important;
     border: none !important;
     border-radius: 12px !important;
     padding: 0.75rem 1.5rem !important;
