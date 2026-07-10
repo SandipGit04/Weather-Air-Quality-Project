@@ -65,8 +65,8 @@ The dataset contains weather and air pollution observations collected from multi
 
 | Application | Deployment Link | Status |
 | :--- | :--- | :--- |
-| **AQI Forecasting System** | **[AQI Forecasting](https://example-frontend.com)** | **🟢 Operational** |
-| **Weather Forecasting System** | **[Weather Forecasting](https://example-admin.com)** | **🟢 Operational** |
+| **AQI Forecasting System** | **[AQI Forecasting](https://aqi-forecast-sys.streamlit.app/)** | **🟢 Operational** |
+| **Weather Forecasting System** | **[Weather Forecasting](https://weather-forecast-sys.streamlit.app/)** | **🟢 Operational** |
 
 ---
 
