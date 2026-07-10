@@ -60,6 +60,16 @@ The dataset contains weather and air pollution observations collected from multi
 
 ---
 
+## 📂 Project Ecosystem
+**This repository contains multiple applications. You can access the live versions below:**
+
+| Application | Deployment Link | Status |
+| :--- | :--- | :--- |
+| **AQI Forecasting System** | **[AQI Forecasting](https://aqi-forecast-sys.streamlit.app/)** | **🟢 Operational** |
+| **Weather Forecasting System** | **[Weather Forecasting](https://weather-forecast-sys.streamlit.app/)** | **🟢 Operational** |
+
+---
+
 ## 🛠 Technologies Used
 
 ### Programming Language
