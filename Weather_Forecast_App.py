@@ -11,6 +11,15 @@ from Weather_Logic import (
     weather_condition, wind_gust, uv_index, weather_description, sunrise_sunset
 )
 
+# The server this app runs on may be in any timezone (often UTC on cloud
+# hosts). Since this is an India-focused app, "now" must always reflect
+# IST (UTC+5:30), not the server's local clock, or the sun position and
+# "current time" displays will be hours off from reality.
+IST = "Asia/Kolkata"
+
+def now_ist():
+    return pd.Timestamp.now(tz="UTC").tz_convert(IST)
+
 st.set_page_config(
     page_title="Weather Forecast India",
     page_icon="🌦️",
@@ -274,11 +283,12 @@ section.main > div {
 .bd-row:last-child { border-bottom: none; }
 .bd-row:hover { background: rgba(255,255,255,0.025); }
 .bd-row.bd-today { background: rgba(79,209,197,0.05); }
+.bd-day-cell { text-align: left; }
 .bd-day-cell .bd-day-name { font-size: 13.5px; font-weight: 700; color: #cfd6e4; display:block; }
 .bd-row.bd-today .bd-day-cell .bd-day-name { color: #4fd1c5; }
 .bd-day-cell .bd-day-date { font-size: 11px; color: #4b5468; }
 .bd-icon-cell { font-size: 19px; text-align: center; }
-.bd-cond-cell { font-size: 12.5px; color: #9aa2b3; }
+.bd-cond-cell { font-size: 12.5px; color: #9aa2b3; text-align: left; }
 .bd-metric-cell { text-align: center; }
 .bd-metric-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #dbe1ec; display: block; }
 .bd-metric-sub { font-size: 9.5px; color: #4b5468; }
@@ -352,6 +362,7 @@ div[data-baseweb="select"] svg  { color: #5b6478 !important; }
 [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stStatusWidget"] { display: none !important; }
 </style>
 """)
+
 
 # --------------------------------------------------------------
 # Model loading
@@ -518,7 +529,7 @@ hour_arr = np.arange(24)
 rain_curve = base_rc * (0.55 + 0.45 * np.sin((hour_arr - 5) / 24 * 2 * np.pi - np.pi/2) ** 2)
 rain_curve = np.clip(rain_curve, 0, 95).round(0)
 
-now_hour = min(pd.Timestamp.now().hour, 23)
+now_hour = min(now_ist().hour, 23)
 
 fig_hourly = go.Figure()
 
@@ -793,7 +804,8 @@ def to_minutes(t_str):
     return h * 60 + m
 
 sr_min, ss_min = to_minutes(sr), to_minutes(ss)
-now_min = pd.Timestamp.now().hour * 60 + pd.Timestamp.now().minute
+_now = now_ist()
+now_min = _now.hour * 60 + _now.minute
 day_length = max(1, ss_min - sr_min)
 
 if is_showing_today:
@@ -809,7 +821,7 @@ arc_x = 20 + progress * 360
 arc_y = 72 - (4 * 0.62 * progress * (1 - progress)) * 160  # matches path curvature
 sun_color = "#f0b95c" if is_daytime else "#5b6478"
 sun_glow  = "0.9" if is_daytime else "0.25"
-now_label = pd.Timestamp.now().strftime("%H:%M")
+now_label = now_ist().strftime("%H:%M")
 
 st.html(f"""
 <div class="sun-card">
