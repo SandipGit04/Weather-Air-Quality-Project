@@ -65,9 +65,8 @@ The dataset contains weather and air pollution observations collected from multi
 
 | Application | Deployment Link | Status |
 | :--- | :--- | :--- |
-| **Client Web App** | [Live Site](https://example-frontend.com) | 🟢 Operational |
-| **Admin Dashboard** | [Admin Panel](https://example-admin.com) | 🟢 Operational |
-| **REST API Gateway** | [API Docs](https://example-api.com) | 🟡 Maintenance |
+| **AQI Forecasting System** | **[AQI Forecasting](https://example-frontend.com)** | **🟢 Operational** |
+| **Weather Forecasting System** | **[Weather Forecasting](https://example-admin.com)** | **🟢 Operational** |
 
 ---
 
