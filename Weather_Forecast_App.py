@@ -13,7 +13,7 @@ from Weather_Logic import (
 
 st.set_page_config(
     page_title="Weather Forecast India",
-    page_icon="weather",
+    page_icon="🌦️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
