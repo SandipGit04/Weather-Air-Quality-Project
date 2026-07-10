@@ -60,6 +60,17 @@ The dataset contains weather and air pollution observations collected from multi
 
 ---
 
+## 📂 Project Ecosystem
+**This repository contains multiple applications. You can access the live versions below:**
+
+| Application | Deployment Link | Status |
+| :--- | :--- | :--- |
+| **Client Web App** | [Live Site](https://example-frontend.com) | 🟢 Operational |
+| **Admin Dashboard** | [Admin Panel](https://example-admin.com) | 🟢 Operational |
+| **REST API Gateway** | [API Docs](https://example-api.com) | 🟡 Maintenance |
+
+---
+
 ## 🛠 Technologies Used
 
 ### Programming Language
