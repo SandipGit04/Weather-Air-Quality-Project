@@ -528,7 +528,7 @@ hour_arr = np.arange(24)
 rain_curve = base_rc * (0.55 + 0.45 * np.sin((hour_arr - 5) / 24 * 2 * np.pi - np.pi/2) ** 2)
 rain_curve = np.clip(rain_curve, 0, 95).round(0)
 
-now_hour = min(pd.Timestamp.now().hour, 23) if is_showing_today else None
+now_hour = min(now_ist().hour, 23) if is_showing_today else None
 
 fig_hourly = go.Figure()
 
