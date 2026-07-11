@@ -865,7 +865,7 @@ st.html(f"""
         <div class="sun-block"><div class="sun-lab">Sunrise</div><div class="sun-val">{sr}</div></div>
         <div class="sun-block">
             <div class="sun-lab">{'Now' if is_showing_today else 'Peak'}</div>
-            <div class="sun-val" style="color:{'#4fd1c5' if is_showing_today else '#7c8598'}; font-size: 20px;">
+            <div class="sun-val" style="color:{'#4fd1c5' if is_showing_today else "#dd1756"}; font-size: 20px;">
                 {now_label if is_showing_today else peak_label}
             </div>
         </div>
