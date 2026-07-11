@@ -805,6 +805,8 @@ sr_min, ss_min = to_minutes(sr), to_minutes(ss)
 _now = now_ist()
 now_min = _now.hour * 60 + _now.minute
 day_length = max(1, ss_min - sr_min)
+peak_min = sr_min + day_length // 2
+peak_label = f"{peak_min // 60:02d}:{peak_min % 60:02d}"
 
 if is_showing_today:
     progress = (now_min - sr_min) / day_length
@@ -864,7 +866,7 @@ st.html(f"""
         <div class="sun-block">
             <div class="sun-lab">{'Now' if is_showing_today else 'Peak'}</div>
             <div class="sun-val" style="color:{'#4fd1c5' if is_showing_today else '#7c8598'}; font-size: 20px;">
-                {now_label if is_showing_today else '&mdash;'}
+                {now_label if is_showing_today else peak_label}
             </div>
         </div>
         <div class="sun-block"><div class="sun-lab">Sunset</div><div class="sun-val">{ss}</div></div>
