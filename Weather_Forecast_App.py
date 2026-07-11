@@ -259,7 +259,7 @@ section.main > div {
 }
 .bd-head-row {
     display: grid;
-    grid-template-columns: 118px 30px 1.4fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 118px 1.4fr 1fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     align-items: center;
     padding: 12px 18px;
@@ -273,7 +273,7 @@ section.main > div {
 .bd-head-cell.left { text-align: left; }
 .bd-row {
     display: grid;
-    grid-template-columns: 118px 30px 1.4fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 118px 1.4fr 1fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     align-items: center;
     padding: 14px 18px;
@@ -283,18 +283,18 @@ section.main > div {
 .bd-row:last-child { border-bottom: none; }
 .bd-row:hover { background: rgba(255,255,255,0.025); }
 .bd-row.bd-today { background: rgba(79,209,197,0.05); }
-.bd-day-cell { text-align: left; }
+.bd-day-cell { text-align: center; }
 .bd-day-cell .bd-day-name { font-size: 13.5px; font-weight: 700; color: #cfd6e4; display:block; }
 .bd-row.bd-today .bd-day-cell .bd-day-name { color: #4fd1c5; }
-.bd-day-cell .bd-day-date { font-size: 11px; color: #4b5468; }
-.bd-icon-cell { font-size: 19px; text-align: center; }
-.bd-cond-cell { font-size: 12.5px; color: #9aa2b3; text-align: left; }
+.bd-day-cell .bd-day-date { font-size: 12px; color: #4b5468; }
+.bd-cond-cell { font-size: 14px; font-weight: 600; color: #e8ecf5; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.bd-cond-cell .bd-icon { font-size: 18px; filter: drop-shadow(0 0 6px rgba(255,209,102,0.45)); }
 .bd-metric-cell { text-align: center; }
 .bd-metric-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #dbe1ec; display: block; }
-.bd-metric-sub { font-size: 9.5px; color: #4b5468; }
+.bd-metric-sub { font-size: 11.3px; color: #4b5468; }
 .bd-temp-cell { display: flex; align-items: center; justify-content: center; gap: 6px; }
 .bd-temp-high { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #f4f6fb; }
-.bd-temp-low { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7c8598; }
+.bd-temp-low { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #7c8598; }
 
 /* detail panels */
 .panel-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 6px; }
@@ -323,8 +323,8 @@ section.main > div {
 }
 .sun-times-row { display: flex; justify-content: space-between; margin-top: 6px; }
 .sun-block { text-align: center; }
-.sun-lab { font-size: 10.5px; color: #5b6478; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;}
-.sun-val { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; color: #f0b95c; }
+.sun-lab { font-size: 13px; color: #5b6478; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;}
+.sun-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: #f0b95c; }
 
 /* footer / app description block (matches AQI app closing style) */
 .app-footer {
@@ -385,19 +385,19 @@ def predict_variable(model, days=7):
     forecast = model.predict(future)
     return forecast[["ds", "yhat"]].tail(days).reset_index(drop=True)
 
-def predict_hourly_today(model, hours=24):
-    """Interpolate an hourly curve for today by blending today's and tomorrow's daily prediction."""
+def predict_hourly_today(model, hours=24, day_offset=0):
+    """Interpolate an hourly curve for the selected day (day_offset days
+    from today) by blending that day's and the next day's prediction."""
     if model is None:
         return None
-    future = model.make_future_dataframe(periods=2, freq="D")
+    future = model.make_future_dataframe(periods=day_offset + 2, freq="D")
     forecast = model.predict(future)
-    v_today = float(forecast["yhat"].iloc[-2])
-    v_tmrw  = float(forecast["yhat"].iloc[-1])
+    v_day  = float(forecast["yhat"].iloc[day_offset - 2])
+    v_next = float(forecast["yhat"].iloc[day_offset - 1])
     hours_arr = np.arange(hours)
-    # Simple diurnal-shaped interpolation: peak mid-afternoon, low at dawn
     daily_curve = np.sin((hours_arr - 6) / 24 * 2 * np.pi - np.pi/2) * 0.5 + 0.5
-    blended = v_today + (v_tmrw - v_today) * (hours_arr / hours) * 0.3
-    variation = (daily_curve - 0.5) * (v_today * 0.12)
+    blended = v_day + (v_next - v_day) * (hours_arr / hours) * 0.3
+    variation = (daily_curve - 0.5) * (v_day * 0.12)
     return blended + variation
 
 cities = sorted([
@@ -435,8 +435,6 @@ with st.spinner("Loading forecast..."):
     pres_fc = predict_variable(models["Pressure"], days_ahead)
     wind_fc = predict_variable(models["WindSpeed"], days_ahead)
 
-    hourly_temp = predict_hourly_today(models["Temperature"], 24)
-
 daily = []
 for i in range(days_ahead):
     t = max(0.0, float(temp_fc["yhat"].iloc[i]))
@@ -471,6 +469,7 @@ with col_jump:
     jump_choice = st.selectbox("Jump to day", jump_labels, label_visibility="visible")
 selected_day_idx = jump_labels.index(jump_choice)
 
+hourly_temp = predict_hourly_today(models["Temperature"], 24, day_offset=selected_day_idx)
 today_data = daily[selected_day_idx]
 today_str = today_data["date"].strftime("%A, %d %B %Y")
 is_showing_today = (selected_day_idx == 0)
@@ -529,7 +528,7 @@ hour_arr = np.arange(24)
 rain_curve = base_rc * (0.55 + 0.45 * np.sin((hour_arr - 5) / 24 * 2 * np.pi - np.pi/2) ** 2)
 rain_curve = np.clip(rain_curve, 0, 95).round(0)
 
-now_hour = min(now_ist().hour, 23)
+now_hour = min(pd.Timestamp.now().hour, 23) if is_showing_today else None
 
 fig_hourly = go.Figure()
 
@@ -556,9 +555,10 @@ fig_hourly.add_trace(go.Scatter(
 ))
 
 # "Now" vertical marker
-fig_hourly.add_vline(
-    x=now_hour, line=dict(color="rgba(255,255,255,0.35)", width=1.5, dash="dot"),
-)
+if now_hour is not None:
+    fig_hourly.add_vline(
+        x=now_hour, line=dict(color="rgba(255,255,255,0.35)", width=1.5, dash="dot"),
+    )
 
 tick_positions = [0, 3, 6, 9, 12, 15, 18, 21]
 tick_text = [hours_labels[i] for i in tick_positions]
@@ -695,9 +695,8 @@ t_range = (temp_max - temp_min) or 1
 bd_html = '<div class="bd-wrap">'
 bd_html += """
 <div class="bd-head-row">
-    <div class="bd-head-cell left">Day</div>
-    <div class="bd-head-cell"></div>
-    <div class="bd-head-cell left">Condition</div>
+    <div class="bd-head-cell">Day</div>
+    <div class="bd-head-cell">Condition</div>
     <div class="bd-head-cell">Temp</div>
     <div class="bd-head-cell">Humidity</div>
     <div class="bd-head-cell">Wind</div>
@@ -720,8 +719,7 @@ for i, d in enumerate(daily):
             <span class="bd-day-name">{day_name}</span>
             <span class="bd-day-date">{date_label}</span>
         </div>
-        <div class="bd-icon-cell">{icon}</div>
-        <div class="bd-cond-cell">{d['condition']}</div>
+        <div class="bd-cond-cell"><span class="bd-icon">{icon}</span>{d['condition']}</div>
         <div class="bd-temp-cell">
             <span class="bd-temp-high">{d['temp']:.0f}&deg;</span>
             <span class="bd-temp-low">{low_val:.0f}&deg;</span>
@@ -865,7 +863,7 @@ st.html(f"""
         <div class="sun-block"><div class="sun-lab">Sunrise</div><div class="sun-val">{sr}</div></div>
         <div class="sun-block">
             <div class="sun-lab">{'Now' if is_showing_today else 'Peak'}</div>
-            <div class="sun-val" style="color:{'#4fd1c5' if is_showing_today else '#7c8598'};font-size:13px">
+            <div class="sun-val" style="color:{'#4fd1c5' if is_showing_today else '#7c8598'}; font-size: 20px;">
                 {now_label if is_showing_today else '&mdash;'}
             </div>
         </div>
