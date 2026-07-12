@@ -4,11 +4,14 @@ from prophet.serialize import model_from_json
 from datetime import date, timedelta
 import os
 import joblib
+from pathlib import Path
 import plotly.graph_objects as go
 import plotly.express as px
 import streamlit.components.v1 as components
 
-weather_df = pd.read_csv("Weather_Pollution_Data.csv")
+# Read the dataset from the specified path
+weather_df = pd.read_csv("Datasets/Forecasting_Data.csv")
+
 # ─────────────────────────────────────────
 # Page Config
 # ─────────────────────────────────────────
@@ -538,7 +541,7 @@ AQI_THRESHOLDS = [
 # ─────────────────────────────────────────
 # Load Cities
 # ─────────────────────────────────────────
-model_folder = "forecast_models"
+model_folder = "aqi_models"
 cities = sorted([
     f.replace("_forecast.json", "")
     for f in os.listdir(model_folder)
@@ -600,7 +603,6 @@ avg_aqi = city_info["AQI"].mean()
 records = len(city_info)
 
 dominant_weather = city_info["WeatherCondition"].mode().iloc[0]
-
 category, cat_color, _, _ = get_aqi_category(avg_aqi)
 
 st.markdown(f"""
@@ -978,7 +980,7 @@ if forecast_clicked:
             st.warning("⚠️ Selected date is outside the forecast range. Try a date within the next 365 days.")
 
     except FileNotFoundError:
-        st.error(f"❌ No forecast model found for **{city}**. Please check your `forecast_models/` folder.")
+        st.error(f"❌ No forecast model found for **{city}**. Please check your `aqi_models/` folder.")
     except Exception as e:
         st.error(f"❌ Forecast error: {str(e)}")
 
@@ -986,7 +988,7 @@ else:
     # ── Empty State ──
     st.markdown("""
     <div style="text-align:center; padding: 4rem 2rem; color: #334155;">
-        <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.;">🌫️</div>
+        <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.7;">🌫️</div>
         <div style="font-family:'Space Grotesk',sans-serif; font-size:1.1rem; color:#475569; font-weight:500;">
             Select a city and date, then click <span style="color:#00c8aa">Forecast AQI</span>
         </div>
