@@ -888,7 +888,7 @@ st.html("""
 <div class="app-footer">
     <div class="app-footer-icon">&#9925;&#65039;</div>
     <div class="app-footer-text">
-        Weather intelligence for <span class="accent">India</span>, powered by real forecasting models
+        Weather intelligence for <span class="accent">India</span>, powered by Prophet time-series forecasting
     </div>
     <div class="app-footer-sub">Predictions powered by Meta Prophet time-series model</div>
 </div>
