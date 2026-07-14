@@ -150,6 +150,11 @@ section.main > div {
     margin-bottom: 5px; letter-spacing: -0.01em;
 }
 .chart-card-sub { font-size: 13px; color: #7c86a0; }
+.chart-card-note {
+    font-size: 11px; color: #4b5468; font-style: italic;
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
 
 /* hero current-weather glass card */
 .hero-glass {
@@ -516,6 +521,7 @@ st.html("""
 <div class="chart-card-head">
     <div class="chart-card-title">24-Hour Forecast</div>
     <div class="chart-card-sub">Temperature curve with rain probability for the selected date.</div>
+    <div class="chart-card-note">Hourly curve interpolated from daily forecast for visualization &mdash; not an independently modeled hourly prediction.</div>
 </div>
 """)
 
