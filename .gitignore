@@ -1,6 +1,13 @@
+# Raw data - intentionally never committed (fetched fresh, then discarded, on every run)
+Datasets/Raw_Weather_Data.csv
+
+# NOTE: Datasets/Forecasting_Data.csv is NOT ignored - it IS committed,
+# because AQI_Forecast_App.py reads it directly at runtime.
+
+# Python
 __pycache__/
 *.pyc
-.env
+.ipynb_checkpoints/
+
+# OS
 .DS_Store
-*.ipynb_checkpoints/
-venv/
