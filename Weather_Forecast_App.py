@@ -365,6 +365,86 @@ div[data-baseweb="select"] svg  { color: #5b6478 !important; }
 
 #MainMenu, footer, header,
 [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stStatusWidget"] { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — Laptops, Tablets, Smartphones
+   (Additive only — does not modify any rule above)
+   ═══════════════════════════════════════════════════════ */
+
+/* Safety net: force Streamlit's native columns (city selector /
+   jump-to-day, the 3 detail panels, etc.) to stack cleanly on
+   narrow screens, even on older Streamlit versions that don't
+   do this on their own. */
+@media (max-width: 768px) {
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+        row-gap: 0.8rem !important;
+    }
+    [data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+/* Small laptops / large tablets */
+@media (max-width: 1200px) {
+    [data-testid="block-container"] {
+        padding: 1.4rem 1.6rem 2.4rem !important;
+    }
+    .metric-strip  { grid-template-columns: repeat(3, 1fr); }
+    .icon-day-row  { grid-template-columns: repeat(3, 1fr); row-gap: 10px; }
+}
+
+/* Tablets (portrait) */
+@media (max-width: 900px) {
+    .page-hero       { padding: 1.6rem 1.6rem; }
+    .page-hero-title { font-size: 1.9rem; }
+    .hero-temp       { font-size: 56px; }
+    .hero-icon       { font-size: 44px; }
+    .hero-main-row   { gap: 16px; }
+
+    /* Wide data tables scroll horizontally instead of squeezing
+       illegibly — content and columns stay unchanged. */
+    .bd-wrap                  { overflow-x: auto; }
+    .bd-head-row, .bd-row     { min-width: 640px; }
+}
+
+/* Smartphones */
+@media (max-width: 640px) {
+    [data-testid="block-container"] {
+        padding: 1rem 0.9rem 2rem !important;
+    }
+    .page-hero        { padding: 1.3rem 1.1rem; border-radius: 14px; }
+    .page-hero-title  { font-size: 1.5rem; gap: 8px; }
+    .page-hero-sub    { font-size: 0.8rem; }
+    .page-hero-badge  { font-size: 0.62rem; padding: 0.25rem 0.7rem; }
+
+    .hero-glass          { padding: 20px 18px; }
+    .hero-top-row        { flex-wrap: wrap; gap: 10px; }
+    .hero-place          { font-size: 19px; }
+    .hero-main-row       { flex-wrap: wrap; gap: 14px; }
+    .hero-temp           { font-size: 46px; }
+    .hero-icon           { font-size: 36px; }
+    .hero-condition-text { font-size: 16px; }
+
+    .metric-strip  { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .icon-day-row  { grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 10px 6px; }
+    .icon-day-emoji { font-size: 20px; }
+    .icon-day-label { font-size: 11px; }
+
+    .chart-card-title { font-size: 17px; }
+    .sec-head         { font-size: 12px; margin: 20px 0 10px; }
+
+    .bd-head-row, .bd-row { min-width: 560px; }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
+    .hero-temp     { font-size: 38px; }
+    .metric-strip  { grid-template-columns: repeat(2, 1fr); }
+    .icon-day-row  { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 """)
 

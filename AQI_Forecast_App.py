@@ -517,6 +517,75 @@ div[role="dialog"] [aria-selected="true"]{
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
     margin: 2rem 0;
 }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — Laptops, Tablets, Smartphones
+   (Additive only — does not modify any rule above)
+   ═══════════════════════════════════════════════════════ */
+
+/* Safety net: force Streamlit's native columns (city/date/button,
+   the 4 metric cards, etc.) to stack cleanly on narrow screens,
+   even on older Streamlit versions that don't do this on their own. */
+@media (max-width: 768px) {
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+        row-gap: 0.8rem !important;
+    }
+    [data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+/* Small laptops / large tablets */
+@media (max-width: 1200px) {
+    [data-testid="block-container"] {
+        padding: 1.6rem 1.6rem !important;
+    }
+    .glass-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablets (portrait) */
+@media (max-width: 900px) {
+    .hero-header { padding: 1.8rem 1.6rem; }
+    .hero-title  { font-size: 1.8rem; }
+    .glass-grid  { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .glass-card  { height: auto; min-height: 180px; padding: 18px 12px; }
+    .metric-value { font-size: 2.1rem; }
+}
+
+/* Smartphones */
+@media (max-width: 640px) {
+    [data-testid="block-container"] {
+        padding: 1.1rem 0.9rem !important;
+    }
+    .hero-header   { padding: 1.4rem 1.1rem; border-radius: 14px; }
+    .hero-title    { font-size: 1.4rem; }
+    .hero-subtitle { font-size: 0.85rem; }
+    .hero-badge    { font-size: 0.62rem; padding: 0.2rem 0.6rem; }
+
+    .glass-grid  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .glass-card  { height: auto; min-height: 150px; padding: 14px 8px; }
+    .glass-value { font-size: 1.3rem; margin-bottom: 8px; }
+    .glass-title { font-size: 0.62rem; }
+    .icon-circle { width: 38px; height: 38px; margin-bottom: 12px; }
+
+    .metric-card  { padding: 1.1rem 1rem; }
+    .metric-value { font-size: 1.7rem; }
+
+    .aqi-banner    { flex-wrap: wrap; padding: 1rem 1.2rem; }
+    .section-title { font-size: 0.95rem; }
+    .legend-row    { gap: 0.4rem; }
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+    .glass-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 1.2rem; }
+}
 </style>
 """, unsafe_allow_html=True)
 
