@@ -220,182 +220,111 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 /* ==================
-    SELECTBOX
-   ==================*/
-
-.stSelectbox div[data-baseweb="select"]{
-    border-radius:16px !important;
-    overflow:hidden !important;
-}
-
-/* Main Box */
-.stSelectbox div[data-baseweb="select"] > div{
-    background:#1b2942 !important;
-    border:2px solid rgba(24,214,197,.20) !important;
-    border-radius:16px !important;
-    min-height:54px !important;
-    padding:0 14px !important;
-    display:flex !important;
-    align-items:center !important;
-    transition:all .25s ease;
-}
-
-/* Hover */
-.stSelectbox div[data-baseweb="select"] > div:hover{
-    border:2px solid #18d6c5 !important;
-    box-shadow:
-        0 0 0 2px rgba(24,214,197,.18),
-        0 0 16px rgba(24,214,197,.30);
-
-}
-
-/* Selected */
-.stSelectbox div[data-baseweb="select"] > div:focus-within{
-    border:2px solid #18d6c5 !important;
-    box-shadow:
-        0 0 0 2px rgba(24,214,197,.18),
-        0 0 18px rgba(24,214,197,.35);
-}
-
-/* Text */
-.stSelectbox div[data-baseweb="select"] input{
-    color:#ffffff !important;
-    font-size:15px !important;
-    font-weight:600 !important;
-    caret-color:#18d6c5 !important;
-}
-
-/* Dropdown Arrow */
-.stSelectbox svg{
-    color:#18d6c5 !important;
-    transition:.25s;
-}
-
-/* Optional */
-.stSelectbox svg:hover{
-    color:#4ef3ff !important;
-}
-
-/* Selected Value */
-.stSelectbox div[data-baseweb="select"] span{
-    font-weight:700 !important;
-    font-size:20px !important;
-    color:#ffffff !important;
-}
-
-/* Backup selector for newer BaseWeb versions */
-.stSelectbox div[data-baseweb="select"] div{
-    font-weight:700 !important;
-}
-            
-/* ==================
-    DATE INPUT
+   FORECAST CONTROLS
+   Select City + Date
    ================== */
 
-.stDateInput > div{
-    border-radius:16px !important;
-    overflow:hidden !important;
+/* Labels */
+.stSelectbox label,
+.stDateInput label {
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    margin-bottom: 8px !important;
 }
 
-/* Main Box */
-.stDateInput > div > div{
-    background:#1b2942 !important;
-    border:2px solid rgba(24,214,197,.20) !important;
-    border-radius:16px !important;
-    min-height:54px !important;
-    padding:0 14px !important;
-    display:flex !important;
-    align-items:center !important;
-    transition:all .25s ease;
+/* Select + Date same container size */
+.stSelectbox div[data-baseweb="select"] > div,
+.stDateInput div[data-baseweb="input"] {
+    background: #1b2942 !important;
+    border: 2px solid rgba(24,214,197,0.28) !important;
+    border-radius: 16px !important;
+    min-height: 58px !important;
+    height: 58px !important;
+    padding: 0 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-shadow: 0 0 8px rgba(24,214,197,0.08) !important;
+    transition: all 0.22s ease !important;
 }
 
-/* Hover */
-.stDateInput > div > div:hover{
-    border:2px solid #18d6c5 !important;
+/* Hover/focus glow - controlled, not huge */
+.stSelectbox div[data-baseweb="select"] > div:hover,
+.stSelectbox div[data-baseweb="select"] > div:focus-within,
+.stDateInput div[data-baseweb="input"]:hover,
+.stDateInput div[data-baseweb="input"]:focus-within {
+    border-color: #18d6c5 !important;
     box-shadow:
-        0 0 0 2px rgba(24,214,197,.18),
-        0 0 16px rgba(24,214,197,.30);
+        0 0 0 1px rgba(24,214,197,0.12),
+        0 0 12px rgba(24,214,197,0.22) !important;
 }
 
-/* Focus */
-.stDateInput > div > div:focus-within{
-    border:2px solid #18d6c5 !important;
-    box-shadow:
-        0 0 0 2px rgba(24,214,197,.18),
-        0 0 16px rgba(24,214,197,.35);
+/* Select City text */
+.stSelectbox div[data-baseweb="select"] span,
+.stSelectbox div[data-baseweb="select"] input {
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
 }
 
-/* Text */
-.stDateInput input{
-    background:transparent !important;
-    color:#ffffff !important;
-    font-size:15px !important;
-    font-weight:600 !important;
-    padding:0 !important;
-    caret-color:#18d6c5 !important;
-}
-            
-/* Calendar Button */
-.stDateInput button{
-    background:transparent !important;
-    color:#18d6c5 !important;
-    border:none !important;
-    transition:.25s;
+/* Date text */
+.stDateInput input {
+    background: transparent !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    padding: 0 !important;
+    caret-color: #18d6c5 !important;
 }
 
-.stDateInput button:hover{
-    color:#4ef3ff !important;
+/* Dropdown/calendar icon */
+.stSelectbox svg,
+.stDateInput button svg {
+    color: #18d6c5 !important;
+    fill: #18d6c5 !important;
 }
-                      
+
 /* ==================
-    CALENDAR POPUP
+   FORECAST BUTTON ONLY
    ================== */
 
-div[role="dialog"]{
-    background:#121d30 !important;
-    border:1px solid rgba(255,255,255,.08) !important;
-    border-radius:18px !important;
+.stButton {
+    height: 58px !important;
+    margin-top: 6px !important;   /* aligns with input boxes */
 }
 
-div[role="dialog"] *{
-    color:white !important;
-}
-
-div[role="dialog"] button{
-    background:transparent !important;
-    color:white !important;
-}
-
-div[role="dialog"] button:hover{
-    background:#1d2d48 !important;
-}
-
-div[role="dialog"] [aria-selected="true"]{
-    background:#5c9dff !important;
-    border-radius:50% !important;
-}
-
-/* ── Button ── */
 .stButton > button {
-    width: 100%;
+    width: 100% !important;
+    height: 58px !important;
+    min-height: 58px !important;
+
     background: linear-gradient(135deg, #00c8aa, #0284c7) !important;
     color: #ffffff !important;
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-size: 1rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.04em !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,.25) !important;
     border: none !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1.5rem !important;
-    cursor: pointer !important;
-    transition: all 0.25s ease !important;
-    margin-top: 0.5rem;
+    border-radius: 14px !important;
+
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.01em !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 22px !important;
+    margin: 0 !important;
+
+    box-shadow: 0 8px 20px rgba(0, 200, 170, 0.22) !important;
+    transition: all 0.22s ease !important;
 }
 
 .stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(0, 200, 170, 0.3) !important;
+    transform: translateY(-1px) !important;
+    box-shadow:
+        0 0 0 1px rgba(24,214,197,0.16),
+        0 0 18px rgba(24,214,197,0.28),
+        0 10px 24px rgba(2,132,199,0.24) !important;
 }
 
 /* ── AQI Result Banner ── */
@@ -1176,3 +1105,4 @@ else:
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
