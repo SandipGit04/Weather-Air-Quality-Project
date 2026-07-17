@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -29,6 +29,11 @@ jobs:
           BACKEND_CSV_URL: https://climasphere-vk5q.onrender.com/download/downloadCSV
         run: python "Fetch and Cleaning Scripts/Fetch_Data.py"
 
+      - name: Check raw data file
+        run: |
+          ls -lh Datasets/
+          test -f Datasets/Weather_Pollution_Data.csv
+          
       - name: Clean data
         run: python "Fetch and Cleaning Scripts/Clean_Data.py"
 
