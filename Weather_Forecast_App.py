@@ -49,6 +49,12 @@ section.main > div {
     color: #dbe1ec !important;
     font-family: 'Inter', sans-serif;
 }
+/* Prevent any oversized element (long headings, wide charts, etc.)
+   from pushing the whole page sideways on phones/tablets — content
+   that needs extra width scrolls within its own box instead. */
+html, body, [data-testid="stAppViewContainer"] {
+    overflow-x: hidden !important;
+}
 [data-testid="block-container"] {
     padding: 1.6rem 2.4rem 3rem !important;
     max-width: 1240px !important;
@@ -101,6 +107,8 @@ section.main > div {
     font-size: 2.5rem; font-weight: 800; color: #f0f9ff;
     margin: 0 0 0.5rem 0; line-height: 1.15;
     display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    row-gap: 4px;
 }
 .page-hero-title .accent { color: #4fd1c5; }
 .page-hero-sub { font-size: 0.95rem; color: #64748b; margin: 0; }
@@ -255,6 +263,15 @@ section.main > div {
 .f-temp-fill { position:absolute; top:0; bottom:0; border-radius: 2px; }
 .f-temp-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #eef1f7; min-width: 34px; text-align: right;}
 
+/* Shown only on small/touch screens, right under charts that scroll */
+.swipe-hint {
+    display: none;
+    font-size: 11px;
+    color: #5b6478;
+    text-align: center;
+    margin: -8px 0 16px;
+}
+
 /* detailed daily breakdown table with headers */
 .bd-wrap {
     background: rgba(255,255,255,0.03);
@@ -408,6 +425,16 @@ div[data-baseweb="select"] svg  { color: #5b6478 !important; }
        illegibly — content and columns stay unchanged. */
     .bd-wrap                  { overflow-x: auto; }
     .bd-head-row, .bd-row     { min-width: 640px; }
+
+    /* Line charts (24-Hour / 6-Day Forecast): same idea — scroll
+       instead of squeezing point labels into each other. */
+    [data-testid="stPlotlyChart"] { overflow-x: auto; }
+    [data-testid="stPlotlyChart"] > div,
+    [data-testid="stPlotlyChart"] .js-plotly-plot,
+    [data-testid="stPlotlyChart"] .plot-container {
+        min-width: 640px;
+    }
+    .swipe-hint { display: block; }
 }
 
 /* Smartphones */
@@ -437,6 +464,12 @@ div[data-baseweb="select"] svg  { color: #5b6478 !important; }
     .sec-head         { font-size: 12px; margin: 20px 0 10px; }
 
     .bd-head-row, .bd-row { min-width: 560px; }
+
+    [data-testid="stPlotlyChart"] > div,
+    [data-testid="stPlotlyChart"] .js-plotly-plot,
+    [data-testid="stPlotlyChart"] .plot-container {
+        min-width: 720px;
+    }
 }
 
 /* Small phones */
@@ -463,22 +496,53 @@ def load_models(city):
         models[var] = joblib.load(path) if os.path.exists(path) else None
     return models
 
-def predict_variable(model, days=7):
+def predict_variable(model, real_today, days=7):
+    """Return `days` consecutive daily predictions starting from the REAL
+    current IST date (real_today), not from wherever the model's training
+    data happens to end. Prophet's make_future_dataframe() only knows how
+    to count forward from its last trained date, so if the model is a few
+    days stale we have to ask it for enough extra periods to actually reach
+    today, then pick today (and the following days) out by date - never by
+    row position."""
     if model is None:
         return pd.DataFrame({"ds": [], "yhat": []})
-    future = model.make_future_dataframe(periods=days, freq="D")
-    forecast = model.predict(future)
-    return forecast[["ds", "yhat"]].tail(days).reset_index(drop=True)
 
-def predict_hourly_today(model, hours=24, day_offset=0):
-    """Interpolate an hourly curve for the selected day (day_offset days
-    from today) by blending that day's and the next day's prediction."""
+    last_hist_date = model.history["ds"].max().date()
+    stale_days = (real_today - last_hist_date).days  # >0 if model is behind
+
+    # Make sure the forecast horizon reaches at least real_today + (days-1).
+    periods = max(1, stale_days + days - 1)
+
+    future = model.make_future_dataframe(periods=periods, freq="D")
+    forecast = model.predict(future)
+    forecast["cal_date"] = forecast["ds"].dt.date
+
+    end_date = real_today + timedelta(days=days - 1)
+    mask = (forecast["cal_date"] >= real_today) & (forecast["cal_date"] <= end_date)
+    return forecast.loc[mask, ["ds", "yhat"]].reset_index(drop=True)
+
+def predict_hourly_today(model, target_date, hours=24):
+    """Interpolate an hourly curve for `target_date` (a real calendar date,
+    picked out of daily[] rather than a row offset) by blending that day's
+    and the next day's Prophet prediction."""
     if model is None:
         return None
-    future = model.make_future_dataframe(periods=day_offset + 2, freq="D")
+
+    last_hist_date = model.history["ds"].max().date()
+    stale_days = (target_date - last_hist_date).days
+    periods = max(1, stale_days + 1)  # ensure we reach target_date + 1 day
+
+    future = model.make_future_dataframe(periods=periods, freq="D")
     forecast = model.predict(future)
-    v_day  = float(forecast["yhat"].iloc[day_offset - 2])
-    v_next = float(forecast["yhat"].iloc[day_offset - 1])
+    forecast["cal_date"] = forecast["ds"].dt.date
+
+    row_day = forecast.loc[forecast["cal_date"] == target_date]
+    row_next = forecast.loc[forecast["cal_date"] == target_date + timedelta(days=1)]
+    if row_day.empty or row_next.empty:
+        return None
+
+    v_day = float(row_day["yhat"].iloc[0])
+    v_next = float(row_next["yhat"].iloc[0])
     hours_arr = np.arange(hours)
     daily_curve = np.sin((hours_arr - 6) / 24 * 2 * np.pi - np.pi/2) * 0.5 + 0.5
     blended = v_day + (v_next - v_day) * (hours_arr / hours) * 0.3
@@ -514,11 +578,12 @@ with col_city:
 with st.spinner("Loading forecast..."):
     models = load_models(city)
     days_ahead = 6
+    real_today = now_ist().date()
 
-    temp_fc = predict_variable(models["Temperature"], days_ahead)
-    hum_fc  = predict_variable(models["Humidity"], days_ahead)
-    pres_fc = predict_variable(models["Pressure"], days_ahead)
-    wind_fc = predict_variable(models["WindSpeed"], days_ahead)
+    temp_fc = predict_variable(models["Temperature"], real_today, days_ahead)
+    hum_fc  = predict_variable(models["Humidity"], real_today, days_ahead)
+    pres_fc = predict_variable(models["Pressure"], real_today, days_ahead)
+    wind_fc = predict_variable(models["WindSpeed"], real_today, days_ahead)
 
 daily = []
 for i in range(days_ahead):
@@ -546,6 +611,19 @@ for i in range(days_ahead):
         "sunrise": sr, "sunset": ss,
     })
 
+# Optional, additive-only touch: a quiet data-freshness note using the
+# app's existing subtle-text style (same look as the topbar subtitle).
+# Purely informational - doesn't alter layout, navigation, or any
+# existing feature; safe to delete if not wanted.
+if models["Temperature"] is not None:
+    model_last_date = models["Temperature"].history["ds"].max().date()
+    freshness_note = (
+        "Model data current as of today"
+        if model_last_date >= real_today
+        else f"Model trained through {model_last_date.strftime('%d %b')} &middot; forecast projected forward to today"
+    )
+    st.html(f'<div class="topbar-sub" style="margin: -8px 0 14px 2px;">{freshness_note}</div>')
+
 # Jump-to-day selector uses the REAL dates from daily[] (not independently
 # computed date.today() offsets), so labels always match the actual forecast
 # regardless of how far the model's training data extends.
@@ -554,7 +632,7 @@ with col_jump:
     jump_choice = st.selectbox("Jump to day", jump_labels, label_visibility="visible")
 selected_day_idx = jump_labels.index(jump_choice)
 
-hourly_temp = predict_hourly_today(models["Temperature"], 24, day_offset=selected_day_idx)
+hourly_temp = predict_hourly_today(models["Temperature"], daily[selected_day_idx]["date"], 24)
 today_data = daily[selected_day_idx]
 today_str = today_data["date"].strftime("%A, %d %B %Y")
 is_showing_today = (selected_day_idx == 0)
@@ -633,7 +711,7 @@ fig_hourly.add_trace(go.Scatter(
     mode="lines+markers+text",
     line=dict(color="#f0b95c", width=3, shape="spline", smoothing=0.5),
     marker=dict(size=6, color="#f0b95c", line=dict(color="#0b0e17", width=1.5)),
-    text=[f"{t:.0f}\u00b0" for t in hourly_temp],
+    text=[f"{t:.0f}\u00b0" if i % 3 == 0 else "" for i, t in enumerate(hourly_temp)],
     textposition="top center",
     textfont=dict(size=11, color="#dbe1ec", family="Inter"),
     name="Temperature",
@@ -680,6 +758,7 @@ fig_hourly.update_layout(
     bargap=0.35,
 )
 st.plotly_chart(fig_hourly, use_container_width=True, config={"displayModeBar": True, "displaylogo": False})
+st.html('<div class="swipe-hint">&#8596; Swipe to see the full 24-hour chart</div>')
 
 # --------------------------------------------------------------
 # 5/6-DAY FORECAST CHART (High/Low dual line, matches reference)
@@ -768,6 +847,7 @@ fig_week.update_layout(
                      font=dict(color="#dbe1ec", family="Inter", size=12)),
 )
 st.plotly_chart(fig_week, use_container_width=True, config={"displayModeBar": True, "displaylogo": False})
+st.html('<div class="swipe-hint">&#8596; Swipe to see the full 6-day chart</div>')
 
 # --------------------------------------------------------------
 # DAILY BREAKDOWN - detailed table with column headers
@@ -962,7 +1042,7 @@ st.html(f"""
 
 
 # --------------------------------------------------------------
-# APP FOOTER (matches AQI app closing description style)
+# APP FOOTER 
 # --------------------------------------------------------------
 st.html("""
 <div class="app-footer">

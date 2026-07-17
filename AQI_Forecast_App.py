@@ -9,6 +9,15 @@ import plotly.graph_objects as go
 import plotly.express as px
 import streamlit.components.v1 as components
 
+# The server this app runs on may be in any timezone (often UTC on cloud
+# hosts). Since this is an India-focused app, "today" must always reflect
+# IST (UTC+5:30), not the server's local clock, or the default forecast
+# date and the 30-day chart window could be off by a day near midnight.
+IST = "Asia/Kolkata"
+
+def today_ist():
+    return pd.Timestamp.now(tz="UTC").tz_convert(IST).date()
+
 # Read the dataset from the specified path
 weather_df = pd.read_csv("Datasets/Forecasting_Data.csv")
 
@@ -518,6 +527,22 @@ div[role="dialog"] [aria-selected="true"]{
     margin: 2rem 0;
 }
 
+/* Shown only on small/touch screens, right under charts that scroll */
+.swipe-hint {
+    display: none;
+    font-size: 11px;
+    color: #64748b;
+    text-align: center;
+    margin: -8px 0 16px;
+}
+
+/* Prevent any oversized element from pushing the whole page sideways
+   on phones/tablets — content that needs extra width scrolls within
+   its own box instead. */
+html, body, [data-testid="stAppViewContainer"] {
+    overflow-x: hidden !important;
+}
+
 /* ═══════════════════════════════════════════════════════
    RESPONSIVE — Laptops, Tablets, Smartphones
    (Additive only — does not modify any rule above)
@@ -555,6 +580,15 @@ div[role="dialog"] [aria-selected="true"]{
     .glass-grid  { grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .glass-card  { height: auto; min-height: 180px; padding: 18px 12px; }
     .metric-value { font-size: 2.1rem; }
+
+    /* Charts scroll instead of squeezing their labels together */
+    [data-testid="stPlotlyChart"] { overflow-x: auto; }
+    [data-testid="stPlotlyChart"] > div,
+    [data-testid="stPlotlyChart"] .js-plotly-plot,
+    [data-testid="stPlotlyChart"] .plot-container {
+        min-width: 680px;
+    }
+    .swipe-hint { display: block; }
 }
 
 /* Smartphones */
@@ -579,6 +613,12 @@ div[role="dialog"] [aria-selected="true"]{
     .aqi-banner    { flex-wrap: wrap; padding: 1rem 1.2rem; }
     .section-title { font-size: 0.95rem; }
     .legend-row    { gap: 0.4rem; }
+
+    [data-testid="stPlotlyChart"] > div,
+    [data-testid="stPlotlyChart"] .js-plotly-plot,
+    [data-testid="stPlotlyChart"] .plot-container {
+        min-width: 740px;
+    }
 }
 
 /* Small phones */
@@ -619,6 +659,14 @@ cities = sorted([
 
 city = st.session_state.get('city', cities[0] if cities else "Demo City")
 
+@st.cache_resource(show_spinner=False)
+def load_city_model(city_name):
+    """Load a city's trained Prophet model (cached — each city's model
+    file is only read from disk once per app session)."""
+    model_path = f"{model_folder}/{city_name}_forecast.json"
+    with open(model_path, "r") as fin:
+        return model_from_json(fin.read())
+
 # ─────────────────────────────────────────
 # HERO HEADER
 # ─────────────────────────────────────────
@@ -643,15 +691,30 @@ col_city, col_date, col_btn = st.columns([2, 2, 1])
 with col_city:
     city = st.selectbox("Select City", cities, label_visibility="visible")
 
+# Anchor the selectable forecast range to THIS CITY'S actual last known
+# data point (the model's own training history), not to the server's
+# system clock. A model last trained through, say, 15 July can only
+# meaningfully forecast from 16 July onward — regardless of what
+# "today" happens to be if the data hasn't been refreshed since.
+last_known_date = load_city_model(city).history["ds"].max().date()
+
 with col_date:
-    min_date = date.today() + timedelta(days=1)
-    max_date = date.today() + timedelta(days=365)
+    min_date = last_known_date + timedelta(days=1)
+    max_date = last_known_date + timedelta(days=365)
+    # Default to the real current IST date when it's actually forecastable
+    # (i.e. the model isn't so stale that "today" is still in the past
+    # relative to its training data); otherwise fall back to the first
+    # date the model can forecast at all.
+    default_date = today_ist()
+    if not (min_date <= default_date <= max_date):
+        default_date = min_date
     selected_date = st.date_input(
         "Select Forecast Date",
-        value=min_date,
+        value=default_date,
         min_value=min_date,
         max_value=max_date
     )
+    st.caption(f" Today: {default_date.strftime('%d %b %Y')} · 📡 Latest available data for {city}: {last_known_date.strftime('%d %b %Y')} ·      forecasting {(default_date - last_known_date).days} days ahead to today")
 
 with col_btn:
     st.markdown("<br>", unsafe_allow_html=True)
@@ -797,9 +860,7 @@ st.markdown(f'<div class="info-strip">AQI Scale Reference {legend_html}</div>', 
 # ─────────────────────────────────────────
 if forecast_clicked:
     try:
-        model_path = f"{model_folder}/{city}_forecast.json"
-        with open(model_path, "r") as fin:
-            model = model_from_json(fin.read())
+        model = load_city_model(city)
 
         with st.spinner(f"Running forecast model for {city}..."):
             future = model.make_future_dataframe(periods=365, freq='D')
@@ -813,7 +874,11 @@ if forecast_clicked:
             upper_bound   = max(0, float(result["yhat_upper"].iloc[0]))
             category, color, emoji, desc = get_aqi_category(predicted_aqi)
 
-            days_ahead = (selected_date - date.today()).days
+            # Measured from the model's own last known data point (not the
+            # system clock) — always a positive, meaningful "how far out is
+            # this prediction" figure, even when the data hasn't been
+            # refreshed in the last day or two.
+            days_ahead = (selected_date - last_known_date).days
 
             # ==============================
             # AUTO SCROLL TO RESULTS
@@ -884,9 +949,9 @@ if forecast_clicked:
             with mc4:
                 st.markdown(f"""
                 <div class="metric-card green">
-                    <div class="metric-label">Days Ahead</div>
+                    <div class="metric-label">Forecast Horizon</div>
                     <div class="metric-value">{days_ahead}</div>
-                    <div class="metric-sub">from today</div>
+                    <div class="metric-sub">days beyond last data</div>
                 </div>""", unsafe_allow_html=True)
 
             # ── Divider ──
@@ -894,15 +959,32 @@ if forecast_clicked:
 
             # ── Plotly Chart ──
             st.markdown(f'<div class="section-title">📈 AQI Forecast Trend — {city}</div>', unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="legend-row" style="margin-top:-0.3rem; margin-bottom:0.9rem;">
+                <div class="legend-chip"><div class="legend-dot" style="background:#00c8aa"></div>Predicted AQI</div>
+                <div class="legend-chip"><div class="legend-dot" style="background:{color}"></div>Selected: {selected_date}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
             chart_df = forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].copy()
-            chart_df = chart_df[chart_df["ds"] >= pd.Timestamp(date.today() - timedelta(days=30))]
+            chart_df = chart_df[chart_df["ds"] >= pd.Timestamp(today_ist() - timedelta(days=30))]
             chart_df["yhat"]       = chart_df["yhat"].clip(lower=0)
             chart_df["yhat_lower"] = chart_df["yhat_lower"].clip(lower=0)
             chart_df["yhat_upper"] = chart_df["yhat_upper"].clip(lower=0)
 
             # Selected date marker
             sel_ts = pd.Timestamp(selected_date)
+
+            # Default visible window: center the view around the selected date
+            # instead of letting Plotly auto-scale across the full data range
+            # (which is what was squeezing the line into a thin sliver).
+            window_start = max(chart_df["ds"].min(), sel_ts - timedelta(days=21))
+            window_end   = min(chart_df["ds"].max(), sel_ts + timedelta(days=21))
+            min_days = 30
+            if (window_end - window_start).days < min_days:
+                window_start = max(chart_df["ds"].min(), window_end - timedelta(days=min_days))
+                if (window_end - window_start).days < min_days:
+                    window_end = min(chart_df["ds"].max(), window_start + timedelta(days=min_days))
 
             fig = go.Figure()
 
@@ -922,7 +1004,7 @@ if forecast_clicked:
                 x=chart_df["ds"],
                 y=chart_df["yhat"],
                 mode="lines",
-                line=dict(color="#00c8aa", width=2),
+                line=dict(color="#00c8aa", width=2.5),
                 name="Predicted AQI",
                 hovertemplate="<b>%{x|%d %b %Y}</b><br>AQI: %{y:.0f}<extra></extra>"
             ))
@@ -969,30 +1051,60 @@ if forecast_clicked:
                     showgrid=True, gridcolor="rgba(255,255,255,0.04)",
                     tickfont=dict(color="#64748b"),
                     zeroline=False,
-                    title=None
+                    title=None,
+                    range=[window_start, window_end],   # focused default view
+                    rangeslider=dict(
+                        visible=True,
+                        thickness=0.08,
+                        bgcolor="#0d1b2e",
+                        bordercolor="rgba(255,255,255,0.08)",
+                        borderwidth=1,
+                    ),
+                    rangeselector=dict(
+                        buttons=[
+                            dict(count=7,   label="7d",   step="day",   stepmode="backward"),
+                            dict(count=30,  label="30d",  step="day",   stepmode="backward"),
+                            dict(count=90,  label="90d",  step="day",   stepmode="backward"),
+                            dict(count=180, label="6m",   step="day",   stepmode="backward"),
+                            dict(step="all", label="All"),
+                        ],
+                        bgcolor="#131f35",
+                        activecolor="#00c8aa",
+                        bordercolor="rgba(255,255,255,0.08)",
+                        borderwidth=1,
+                        font=dict(color="#94a3b8", size=11),
+                        y=1.1,
+                    ),
                 ),
                 yaxis=dict(
                     showgrid=True, gridcolor="rgba(255,255,255,0.04)",
                     tickfont=dict(color="#64748b"),
-                    title=dict(text="AQI Value", font=dict(color="#475569"))
+                    title=dict(text="AQI Value", font=dict(color="#475569")),
+                    fixedrange=False,
                 ),
-                legend=dict(
-                    bgcolor="rgba(13,27,46,0.8)",
-                    bordercolor="rgba(255,255,255,0.08)",
-                    borderwidth=1,
-                    font=dict(color="#94a3b8", size=11)
-                ),
+                showlegend=False,
                 hovermode="x unified",
                 hoverlabel=dict(
                     bgcolor="#0d1b2e",
                     bordercolor="rgba(0,200,170,0.3)",
                     font=dict(color="#e2e8f0", family="Inter")
                 ),
-                margin=dict(l=10, r=80, t=20, b=10),
-                height=400
+                margin=dict(l=10, r=55, t=65, b=10),
+                height=460,
+                dragmode="pan",
             )
 
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(
+                fig,
+                use_container_width=True,
+                config={
+                    "displayModeBar": True,
+                    "displaylogo": False,
+                    "scrollZoom": True,
+                    "modeBarButtonsToAdd": ["pan2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d"],
+                }
+            )
+            st.html('<div class="swipe-hint">&#8596; Swipe to see the full chart · pinch or drag the mini-bar below to zoom</div>')
 
             # ── Seasonal Breakdown ──
             st.markdown('<div class="section-title">🗓️ Monthly AQI Pattern</div>', unsafe_allow_html=True)
@@ -1044,6 +1156,7 @@ if forecast_clicked:
             )
 
             st.plotly_chart(fig2, use_container_width=True)
+            st.html('<div class="swipe-hint">&#8596; Swipe to see the full chart</div>')
 
         else:
             st.warning("⚠️ Selected date is outside the forecast range. Try a date within the next 365 days.")
