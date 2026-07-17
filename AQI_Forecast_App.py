@@ -53,16 +53,19 @@ html, body, [data-testid="stAppViewContainer"] {
 
 [data-testid="block-container"] {
     padding: 2rem 3rem !important;
-    max-width: 1400px;
+    max-width: 1240px !important;
 }
 
-/* ── Header ── */
+/* ============================================================
+   AQI HERO HEADER - UPDATED WITH CROSS-APP NAV BUTTONS
+   ============================================================ */
+
 .hero-header {
     background: linear-gradient(135deg, #0d2137 0%, #0a1628 50%, #071020 100%);
     border: 1px solid rgba(0, 200, 170, 0.15);
     border-radius: 20px;
-    padding: 2.5rem 3rem;
-    margin-bottom: 2rem;
+    padding: 2.2rem 2.6rem;
+    margin-bottom: 1.6rem;
     position: relative;
     overflow: hidden;
 }
@@ -84,26 +87,22 @@ html, body, [data-testid="stAppViewContainer"] {
     background: radial-gradient(ellipse, rgba(56,189,248,0.05) 0%, transparent 70%);
 }
 
-.hero-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: #f0f9ff;
-    margin: 0 0 0.4rem 0;
-    line-height: 1.2;
-}
-.hero-title .accent { color: #00c8aa; }
-
-.hero-subtitle {
-    font-size: 1rem;
-    color: #94a3b8;
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    margin: 0;
+/* NEW: top row holding badge + nav buttons, wraps on small screens */
+.hero-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 .hero-badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: rgba(0, 200, 170, 0.12);
     border: 1px solid rgba(0, 200, 170, 0.3);
     color: #00c8aa;
@@ -113,7 +112,88 @@ html, body, [data-testid="stAppViewContainer"] {
     text-transform: uppercase;
     padding: 0.25rem 0.75rem;
     border-radius: 999px;
-    margin-bottom: 1rem;
+}
+
+/* NEW: container for the two nav buttons, so they wrap together as a pair */
+.hero-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hero-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.hero-nav-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Weather app link - blue, matches Weather app's own accent */
+.hero-nav-btn.weather-link {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(2,132,199,0.35);
+}
+.hero-nav-btn.weather-link:hover {
+    box-shadow: 0 4px 16px rgba(2,132,199,0.5);
+    color: #ffffff !important;
+}
+
+/* ClimaSphere link - distinct amber/gold, signals "combined / flagship" app */
+.hero-nav-btn.clima-link {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(245,158,11,0.35);
+}
+.hero-nav-btn.clima-link:hover {
+    box-shadow: 0 4px 16px rgba(245,158,11,0.5);
+    color: #ffffff !important;
+}
+
+.hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #f0f9ff;
+    margin: 0 0 0.4rem 0;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title .accent {
+    color: #00c8aa;
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: #94a3b8;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Responsive adjustments for phones */
+@media (max-width: 640px) {
+    .hero-header { padding: 1.6rem 1.4rem; }
+    .hero-title { font-size: 1.7rem; }
+    .hero-topline { flex-direction: column; align-items: flex-start; }
+    .hero-nav-links { width: 100%; }
+    .hero-nav-btn { flex: 1 1 auto; justify-content: center; font-size: 0.72rem; padding: 0.5rem 0.8rem; }
 }
 
 /* ── Control Panel ── */
@@ -353,7 +433,7 @@ html, body, [data-testid="stAppViewContainer"] {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 8px;
     border-radius: 16px 16px 0 0;
 }
 
@@ -598,8 +678,18 @@ def load_city_model(city_name):
 # ─────────────────────────────────────────
 st.markdown("""
 <div class="hero-header">
-    <div class="hero-badge">🛰️ India Air Quality Intelligence</div>
-    <h1 class="hero-title">🌍 AQI <span class="accent">Forecasting</span> System</h1>
+    <div class="hero-topline">
+        <div class="hero-badge">&#128752; India Air Quality Intelligence</div>
+        <div class="hero-nav-links">
+            <a href="https://weather-forecast-sys.streamlit.app/" target="_self" class="hero-nav-btn weather-link">
+                &#127780; Open Weather Forecasting System &rarr;
+            </a>
+            <a href="https://climasphere-rust.vercel.app/" target="_self" class="hero-nav-btn clima-link">
+                &#127760; Open ClimaSphere &rarr;
+            </a>
+        </div>
+    </div>
+    <h1 class="hero-title">&#127757; AQI <span class="accent">Forecasting</span> System</h1>
     <p class="hero-subtitle">
         Prophet-powered time-series forecasting · """ + str(len(cities)) + """ Indian cities · Up to 365-day predictions
     </p>
@@ -1105,3 +1195,4 @@ else:
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
