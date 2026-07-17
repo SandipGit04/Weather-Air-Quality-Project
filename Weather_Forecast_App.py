@@ -618,10 +618,14 @@ st.html(f"""
     <div class="page-hero-topline">
         <div class="page-hero-badge">&#127749; India Weather Intelligence</div>
         <div class="page-hero-nav-links">
-            <a href="https://aqi-forecast-sys.streamlit.app/" target="_self" class="aqi-nav-btn">
+            <a href="https://aqi-forecast-sys.streamlit.app/"
+               onclick="window.top.location.href='https://aqi-forecast-sys.streamlit.app/'; return false;"
+               class="aqi-nav-btn">
                 &#127757; Open AQI Forecasting System &rarr;
             </a>
-            <a href="https://climasphere-rust.vercel.app/" target="_self" class="clima-nav-btn">
+            <a href="https://climasphere-rust.vercel.app/"
+               onclick="window.top.location.href='https://climasphere-rust.vercel.app/'; return false;"
+               class="clima-nav-btn">
                 &#127760; Open ClimaSphere &rarr;
             </a>
         </div>
