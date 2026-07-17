@@ -366,7 +366,7 @@ html, body, [data-testid="stAppViewContainer"] {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 8px;
     border-radius: 16px 16px 0 0;
 }
 
