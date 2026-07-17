@@ -1,5 +1,5 @@
 # Raw data - intentionally never committed (fetched fresh, then discarded, on every run)
-Datasets/Raw_Weather_Data.csv
+Datasets/Weather_Pollution_Data.csv
 
 # NOTE: Datasets/Forecasting_Data.csv is NOT ignored - it IS committed,
 # because AQI_Forecast_App.py reads it directly at runtime.
@@ -11,3 +11,6 @@ __pycache__/
 
 # OS
 .DS_Store
+
+# Temporary model experiments
+Temporary Test Models/

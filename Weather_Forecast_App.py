@@ -78,7 +78,7 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 .topbar-sub { font-size: 12px; color: #4b5468; }
 
-/* BIG page header (matches AQI app hero) */
+/* BIG page header */
 .page-hero {
     background: linear-gradient(135deg, #0d2137 0%, #0a1628 50%, #071020 100%);
     border: 1px solid rgba(79,209,197,0.15);

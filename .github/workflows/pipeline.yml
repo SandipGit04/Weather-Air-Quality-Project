@@ -1,0 +1,47 @@
+name: Refresh Data & Retrain Models
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch latest raw data from backend
+        env:
+          BACKEND_CSV_URL: https://climasphere-vk5q.onrender.com/download/downloadCSV
+        run: python "Fetch and Cleaning Scripts/Fetch_Data.py"
+
+      - name: Clean data
+        run: python "Fetch and Cleaning Scripts/Clean_Data.py"
+
+      - name: Retrain Weather models
+        run: python "Training Model Scripts/Weather_Model_Training.py"
+
+      - name: Retrain AQI models
+        run: python "Training Model Scripts/AQI_Model_Training.py"
+
+      - name: Commit and push updated data & models
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add Datasets/Forecasting_Data.csv weather_models/ aqi_models/
+          git diff --staged --quiet || git commit -m "Auto-update data & models: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
