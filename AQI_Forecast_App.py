@@ -92,10 +92,7 @@ html, body, [data-testid="stAppViewContainer"] {
     margin: 0 0 0.4rem 0;
     line-height: 1.2;
 }
-
-.hero-title span {
-    color: #00c8aa;
-}
+.hero-title .accent { color: #00c8aa; }
 
 .hero-subtitle {
     font-size: 1rem;
@@ -673,7 +670,7 @@ def load_city_model(city_name):
 st.markdown("""
 <div class="hero-header">
     <div class="hero-badge">🛰️ India Air Quality Intelligence</div>
-    <h1 class="hero-title">🌍 AQI <span>Forecasting</span> System</h1>
+    <h1 class="hero-title">🌍 AQI <span class="accent">Forecasting</span> System</h1>
     <p class="hero-subtitle">
         Prophet-powered time-series forecasting · """ + str(len(cities)) + """ Indian cities · Up to 365-day predictions
     </p>
@@ -714,7 +711,7 @@ with col_date:
         min_value=min_date,
         max_value=max_date
     )
-    st.caption(f" Today: {default_date.strftime('%d %b %Y')} · 📡 Latest available data for {city}: {last_known_date.strftime('%d %b %Y')} ·      forecasting {(default_date - last_known_date).days} days ahead to today")
+    st.caption(f" Today: {default_date.strftime('%d %b %Y')} · 📡 Latest available data for {city}: {last_known_date.strftime('%d %b %Y')} · forecasting {(default_date - last_known_date).days} days ahead to today")
 
 with col_btn:
     st.markdown("<br>", unsafe_allow_html=True)
