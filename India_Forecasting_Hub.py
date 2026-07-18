@@ -562,7 +562,7 @@ def render_aqi_app():
 
     /* Hover */
     .stSelectbox div[data-baseweb="select"] > div:hover{
-        border:2px solid #ff7a1a !important;
+        border:3px solid #ff7a1a !important;
         box-shadow:
             0 0 0 2px rgba(255, 122, 26, .18),
             0 0 16px rgba(255, 122, 26, .30);
@@ -629,7 +629,7 @@ def render_aqi_app():
 
     /* Hover */
     .stDateInput > div > div:hover{
-        border:2px solid #ff7a1a !important;
+        border:3px solid #ff7a1a !important;
         box-shadow:
             0 0 0 2px rgba(255, 122, 26, .18),
             0 0 16px rgba(255, 122, 26, .30);
