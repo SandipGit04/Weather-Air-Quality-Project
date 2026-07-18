@@ -74,14 +74,14 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 .topbar-brand .dot {
     width: 8px; height: 8px; border-radius: 50%;
-    background: #4fd1c5; box-shadow: 0 0 8px #4fd1c5aa;
+    background: #ff6900; box-shadow: 0 0 8px #ff6900aa;
 }
 .topbar-sub { font-size: 12px; color: #4b5468; }
 
 /* BIG page header */
 .page-hero {
     background: linear-gradient(135deg, #0d2137 0%, #0a1628 50%, #071020 100%);
-    border: 1px solid rgba(79,209,197,0.15);
+    border: 1px solid rgba(255,105,0,0.15);
     border-radius: 20px;
     padding: 2.2rem 2.6rem;
     margin-bottom: 1.6rem;
@@ -92,13 +92,13 @@ html, body, [data-testid="stAppViewContainer"] {
     content: '';
     position: absolute; top: -60px; right: -60px;
     width: 260px; height: 260px;
-    background: radial-gradient(circle, rgba(79,209,197,0.10) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255,105,0,0.10) 0%, transparent 70%);
     border-radius: 50%; pointer-events: none;
 }
 .page-hero-badge {
     display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(79,209,197,0.12); border: 1px solid rgba(79,209,197,0.3);
-    color: #4fd1c5; font-size: 0.7rem; font-weight: 700;
+    background: rgba(255,105,0,0.12); border: 1px solid rgba(255,105,0,0.3);
+    color: #ff6900; font-size: 0.7rem; font-weight: 700;
     letter-spacing: 0.1em; text-transform: uppercase;
     padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 1rem;
 }
@@ -110,7 +110,7 @@ html, body, [data-testid="stAppViewContainer"] {
     flex-wrap: wrap;
     row-gap: 4px;
 }
-.page-hero-title .accent { color: #4fd1c5; }
+.page-hero-title .accent { color: #ff6900; }
 .page-hero-sub { font-size: 0.95rem; color: #64748b; margin: 0; }
 
 /* weather icon row above the 6-day chart */
@@ -172,8 +172,8 @@ html, body, [data-testid="stAppViewContainer"] {
     margin-bottom: 18px;
     overflow: hidden;
     background:
-        radial-gradient(120% 140% at 8% 0%, rgba(79,209,197,0.16) 0%, transparent 55%),
-        radial-gradient(90% 120% at 95% 100%, rgba(99,124,255,0.14) 0%, transparent 55%),
+        radial-gradient(120% 140% at 8% 0%, rgba(255,105,0,0.16) 0%, transparent 55%),
+        radial-gradient(90% 120% at 95% 100%, rgba(240,185,92,0.14) 0%, transparent 55%),
         linear-gradient(150deg, #131a2c 0%, #0d1220 60%, #0a0d16 100%);
     border: 1px solid rgba(255,255,255,0.08);
     box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
@@ -187,9 +187,9 @@ html, body, [data-testid="stAppViewContainer"] {
 .hero-place { font-size: 25px; font-weight: 600; color: #cfd6e4; display:flex; align-items:center; gap:3px;}
 .hero-date  { font-size: 14px; color: #5b6478; margin-top: 3px; }
 .hero-cond-pill {
-    background: rgba(79,209,197,0.12);
-    border: 1px solid rgba(79,209,197,0.3);
-    color: #4fd1c5;
+    background: rgba(255,105,0,0.12);
+    border: 1px solid rgba(255,105,0,0.3);
+    color: #ff6900;
     font-size: 12px; font-weight: 600;
     padding: 5px 13px; border-radius: 999px;
     letter-spacing: 0.02em;
@@ -197,7 +197,7 @@ html, body, [data-testid="stAppViewContainer"] {
 .hero-main-row {
     display: flex; align-items: center; gap: 26px; margin-bottom: 6px;
 }
-.hero-icon { font-size: 58px; line-height: 1; filter: drop-shadow(0 4px 14px rgba(79,209,197,0.25)); }
+.hero-icon { font-size: 58px; line-height: 1; filter: drop-shadow(0 4px 14px rgba(255,105,0,0.25)); }
 .hero-temp {
     font-family: 'Inter', sans-serif;
     font-size: 76px; font-weight: 800; color: #f4f6fb;
@@ -234,7 +234,7 @@ html, body, [data-testid="stAppViewContainer"] {
     text-transform: uppercase; letter-spacing: 0.08em;
     margin: 26px 0 12px;
 }
-.sec-head i { color: #4fd1c5; font-size: 12px; }
+.sec-head i { color: #ff6900; font-size: 12px; }
 
 /* forecast day-row list (standard, compact like real weather apps) */
 .forecast-list {
@@ -252,7 +252,7 @@ html, body, [data-testid="stAppViewContainer"] {
     border-bottom: 1px solid rgba(255,255,255,0.045);
 }
 .f-row:last-child { border-bottom: none; }
-.f-row.is-today .f-day { color: #4fd1c5; }
+.f-row.is-today .f-day { color: #ff6900; }
 .f-day { font-size: 13.5px; font-weight: 600; color: #cfd6e4; }
 .f-date { font-size: 11px; color: #4b5468; display: block; margin-top: 1px; }
 .f-icon { font-size: 19px; text-align: center; }
@@ -304,10 +304,10 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 .bd-row:last-child { border-bottom: none; }
 .bd-row:hover { background: rgba(255,255,255,0.025); }
-.bd-row.bd-today { background: rgba(79,209,197,0.05); }
+.bd-row.bd-today { background: rgba(255,105,0,0.05); }
 .bd-day-cell { text-align: center; }
 .bd-day-cell .bd-day-name { font-size: 13.5px; font-weight: 700; color: #cfd6e4; display:block; }
-.bd-row.bd-today .bd-day-cell .bd-day-name { color: #4fd1c5; }
+.bd-row.bd-today .bd-day-cell .bd-day-name { color: #ff6900; }
 .bd-day-cell .bd-day-date { font-size: 12px; color: #4b5468; }
 .bd-cond-cell { font-size: 14px; font-weight: 600; color: #e8ecf5; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .bd-cond-cell .bd-icon { font-size: 18px; filter: drop-shadow(0 0 6px rgba(255,209,102,0.45)); }
@@ -330,7 +330,7 @@ html, body, [data-testid="stAppViewContainer"] {
     font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
     color: #5b6478; margin-bottom: 12px; display:flex; align-items:center; gap:6px;
 }
-.panel-title i { color: #4fd1c5; }
+.panel-title i { color: #ff6900; }
 .p-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04);}
 .p-row:last-child { border-bottom: none; }
 .p-label { font-size: 12.5px; color: #6b7488; }
@@ -364,7 +364,7 @@ html, body, [data-testid="stAppViewContainer"] {
     color: #7c86a0;
     font-weight: 400;
 }
-.app-footer-text .accent { color: #4fd1c5; font-weight: 700; }
+.app-footer-text .accent { color: #ff6900; font-weight: 700; }
 .app-footer-sub {
     font-size: 0.8rem;
     color: #4b5468;
@@ -646,7 +646,7 @@ st.html(f"""
 <div class="hero-glass">
     <div class="hero-top-row">
         <div>
-            <div class="hero-place"><i class="fas fa-location-dot" style="font-size:18px;color:#4fd1c5"></i> {city}</div>
+            <div class="hero-place"><i class="fas fa-location-dot" style="font-size:18px;color:#ff6900"></i> {city}</div>
             <div class="hero-date">{today_str}{'' if is_showing_today else ' &middot; forecast'}</div>
         </div>
         <div class="hero-cond-pill">{today_data['condition']}</div>
@@ -700,7 +700,7 @@ fig_hourly = go.Figure()
 fig_hourly.add_trace(go.Bar(
     x=hours_labels, y=rain_curve,
     name="Rain Chance",
-    marker=dict(color="rgba(58,90,140,0.55)"),
+    marker=dict(color="rgba(100,116,139,0.55)"),
     yaxis="y2",
     hovertemplate="%{x}<br>Rain %{y:.0f}%<extra></extra>",
 ))
@@ -1031,7 +1031,7 @@ st.html(f"""
         <div class="sun-block"><div class="sun-lab">Sunrise</div><div class="sun-val">{sr}</div></div>
         <div class="sun-block">
             <div class="sun-lab">{'Now' if is_showing_today else 'Peak'}</div>
-            <div class="sun-val" style="color:{'#4fd1c5' if is_showing_today else "#dd1756"}; font-size: 20px;">
+            <div class="sun-val" style="color:{'#ff6900' if is_showing_today else "#dd1756"}; font-size: 20px;">
                 {now_label if is_showing_today else peak_label}
             </div>
         </div>

@@ -62,7 +62,7 @@ html, body, [data-testid="stAppViewContainer"] {
 
 .hero-header {
     background: linear-gradient(135deg, #0d2137 0%, #0a1628 50%, #071020 100%);
-    border: 1px solid rgba(0, 200, 170, 0.15);
+    border: 1px solid rgba(255,105,0,0.15);
     border-radius: 20px;
     padding: 2.5rem 3rem;
     margin-bottom: 2rem;
@@ -75,7 +75,7 @@ html, body, [data-testid="stAppViewContainer"] {
     position: absolute;
     top: -60px; right: -60px;
     width: 250px; height: 250px;
-    background: radial-gradient(circle, rgba(0,200,170,0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255,105,0,0.08) 0%, transparent 70%);
     border-radius: 50%;
 }
 
@@ -84,7 +84,7 @@ html, body, [data-testid="stAppViewContainer"] {
     position: absolute;
     bottom: -80px; left: 30%;
     width: 300px; height: 200px;
-    background: radial-gradient(ellipse, rgba(56,189,248,0.05) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(255,105,0,0.05) 0%, transparent 70%);
 }
 
 
@@ -92,9 +92,9 @@ html, body, [data-testid="stAppViewContainer"] {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(0, 200, 170, 0.12);
-    border: 1px solid rgba(0, 200, 170, 0.3);
-    color: #00c8aa;
+    background: rgba(255,105,0,0.12);
+    border: 1px solid rgba(255,105,0,0.3);
+    color: #ff6900;
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -113,7 +113,7 @@ html, body, [data-testid="stAppViewContainer"] {
     position: relative;
     z-index: 1;
 }
-.hero-title .accent { color: #4fd1c5; }
+.hero-title .accent { color: #ff6900; }
 
 .hero-subtitle {
     font-size: 1rem;
@@ -153,8 +153,8 @@ html, body, [data-testid="stAppViewContainer"] {
 
 .glass-card:hover{
     transform:translateY(-8px);
-    box-shadow:0 0 30px rgba(0,210,211,.15);
-    border-color:#00d2d3;
+    box-shadow:0 0 30px rgba(255,105,0,.15);
+    border-color:#ff6900;
 }
 
 .icon-circle {
@@ -188,10 +188,10 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 /* Theme Colors for Glass Cards */
-.g-teal { border-color: rgba(0, 210, 211, 0.3); box-shadow: 0 0 20px rgba(0, 210, 211, 0.05), inset 0 0 10px rgba(0, 210, 211, 0.05); }
-.g-teal .icon-circle { border-color: #00d2d3; color: #00d2d3; box-shadow: 0 0 10px rgba(0, 210, 211, 0.2); }
-.g-teal .glass-title, .g-teal .glass-footer { color: #00d2d3; }
-.g-teal .glass-footer { border-color: rgba(0, 210, 211, 0.2); }
+.g-teal { border-color: rgba(255,105,0,0.3); box-shadow: 0 0 20px rgba(255,105,0,0.05), inset 0 0 10px rgba(255,105,0,0.05); }
+.g-teal .icon-circle { border-color: #ff6900; color: #ff6900; box-shadow: 0 0 10px rgba(255,105,0,0.2); }
+.g-teal .glass-title, .g-teal .glass-footer { color: #ff6900; }
+.g-teal .glass-footer { border-color: rgba(255,105,0,0.2); }
 
 .g-blue { border-color: rgba(52, 152, 219, 0.3); box-shadow: 0 0 20px rgba(52, 152, 219, 0.05), inset 0 0 10px rgba(52, 152, 219, 0.05); }
 .g-blue .icon-circle { border-color: #3498db; color: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); }
@@ -247,14 +247,14 @@ html, body, [data-testid="stAppViewContainer"] {
 .stSelectbox div[data-baseweb="select"] > div,
 .stDateInput div[data-baseweb="input"] {
     background: #1b2942 !important;
-    border: 2px solid rgba(24,214,197,0.28) !important;
+    border: 2px solid rgba(255,137,4,0.28) !important;
     border-radius: 16px !important;
     min-height: 58px !important;
     height: 58px !important;
     padding: 0 18px !important;
     display: flex !important;
     align-items: center !important;
-    box-shadow: 0 0 8px rgba(24,214,197,0.08) !important;
+    box-shadow: 0 0 8px rgba(255,137,4,0.08) !important;
     transition: all 0.22s ease !important;
 }
 
@@ -263,10 +263,10 @@ html, body, [data-testid="stAppViewContainer"] {
 .stSelectbox div[data-baseweb="select"] > div:focus-within,
 .stDateInput div[data-baseweb="input"]:hover,
 .stDateInput div[data-baseweb="input"]:focus-within {
-    border-color: #18d6c5 !important;
+    border-color: #ff8904 !important;
     box-shadow:
-        0 0 0 1px rgba(24,214,197,0.12),
-        0 0 12px rgba(24,214,197,0.22) !important;
+        0 0 0 1px rgba(255,137,4,0.12),
+        0 0 12px rgba(255,137,4,0.22) !important;
 }
 
 /* Select City text */
@@ -284,14 +284,14 @@ html, body, [data-testid="stAppViewContainer"] {
     font-size: 16px !important;
     font-weight: 700 !important;
     padding: 0 !important;
-    caret-color: #18d6c5 !important;
+    caret-color: #ff8904 !important;
 }
 
 /* Dropdown/calendar icon */
 .stSelectbox svg,
 .stDateInput button svg {
-    color: #18d6c5 !important;
-    fill: #18d6c5 !important;
+    color: #ff8904 !important;
+    fill: #ff8904 !important;
 }
 
 /* ==================
@@ -308,13 +308,13 @@ html, body, [data-testid="stAppViewContainer"] {
     height: 58px !important;
     min-height: 58px !important;
 
-    background: linear-gradient(135deg, #00c8aa, #0284c7) !important;
+    background: linear-gradient(135deg, #ff6900, #f54900) !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 14px !important;
 
     font-family: 'Space Grotesk', sans-serif !important;
-    font-size: 16px !important;
+    font-size: 20px !important;
     font-weight: 800 !important;
     letter-spacing: 0.01em !important;
 
@@ -325,15 +325,15 @@ html, body, [data-testid="stAppViewContainer"] {
     padding: 0 22px !important;
     margin: 0 !important;
 
-    box-shadow: 0 8px 20px rgba(0, 200, 170, 0.22) !important;
+    box-shadow: 0 8px 20px rgba(255,105,0,0.22) !important;
     transition: all 0.22s ease !important;
 }
 
 .stButton > button:hover {
     transform: translateY(-1px) !important;
     box-shadow:
-        0 0 0 1px rgba(24,214,197,0.16),
-        0 0 18px rgba(24,214,197,0.28),
+        0 0 0 1px rgba(255,137,4,0.16),
+        0 0 18px rgba(255,137,4,0.28),
         0 10px 24px rgba(2,132,199,0.24) !important;
 }
 
@@ -367,7 +367,7 @@ html, body, [data-testid="stAppViewContainer"] {
     border-radius: 16px 16px 0 0;
 }
 
-.metric-card.teal::before  { background: linear-gradient(90deg, #00c8aa, #0284c7); }
+.metric-card.teal::before  { background: linear-gradient(90deg, #ff6900, #f54900); }
 .metric-card.amber::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
 .metric-card.blue::before  { background: linear-gradient(90deg, #3b82f6, #8b5cf6); }
 .metric-card.green::before { background: linear-gradient(90deg, #22c55e, #10b981); }
@@ -403,13 +403,13 @@ html, body, [data-testid="stAppViewContainer"] {
     color: #cbd5e1;
     margin: 1.8rem 0 1rem;
     padding-left: 0.8rem;
-    border-left: 3px solid #00c8aa;
+    border-left: 3px solid #ff6900;
 }
 
 /* ── Info Cards ── */
 .info-strip {
-    background: rgba(0, 200, 170, 0.05);
-    border: 1px solid rgba(0, 200, 170, 0.12);
+    background: rgba(255,105,0,0.05);
+    border: 1px solid rgba(255,105,0,0.12);
     border-radius: 12px;
     padding: 1rem 1.4rem;
     margin-top: 1.5rem;
@@ -654,7 +654,7 @@ with col_date:
 
 with col_btn:
     st.markdown("<br>", unsafe_allow_html=True)
-    forecast_clicked = st.button("⚡ Forecast AQI", use_container_width=True)
+    forecast_clicked = st.button("💨 Forecast AQI", use_container_width=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -686,7 +686,7 @@ margin-bottom:30px;
 <h3 style="
 margin-top:0;
 margin-bottom:22px;
-color:#00d2d3;
+color:#ff6900;
 font-family:'Space Grotesk';
 font-weight:700;
 ">
@@ -897,7 +897,7 @@ if forecast_clicked:
             st.markdown(f'<div class="section-title">📈 AQI Forecast Trend — {city}</div>', unsafe_allow_html=True)
             st.markdown(f"""
             <div class="legend-row" style="margin-top:-0.3rem; margin-bottom:0.9rem;">
-                <div class="legend-chip"><div class="legend-dot" style="background:#00c8aa"></div>Predicted AQI</div>
+                <div class="legend-chip"><div class="legend-dot" style="background:#ff6900"></div>Predicted AQI</div>
                 <div class="legend-chip"><div class="legend-dot" style="background:{color}"></div>Selected: {selected_date}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -929,7 +929,7 @@ if forecast_clicked:
                 x=pd.concat([chart_df["ds"], chart_df["ds"][::-1]]),
                 y=pd.concat([chart_df["yhat_upper"], chart_df["yhat_lower"][::-1]]),
                 fill="toself",
-                fillcolor="rgba(0,200,170,0.07)",
+                fillcolor="rgba(255,105,0,0.07)",
                 line=dict(color="rgba(0,0,0,0)"),
                 hoverinfo="skip",
                 name="Confidence Band"
@@ -940,7 +940,7 @@ if forecast_clicked:
                 x=chart_df["ds"],
                 y=chart_df["yhat"],
                 mode="lines",
-                line=dict(color="#00c8aa", width=2.5),
+                line=dict(color="#ff6900", width=2.5),
                 name="Predicted AQI",
                 hovertemplate="<b>%{x|%d %b %Y}</b><br>AQI: %{y:.0f}<extra></extra>"
             ))
@@ -1005,7 +1005,7 @@ if forecast_clicked:
                             dict(step="all", label="All"),
                         ],
                         bgcolor="#131f35",
-                        activecolor="#00c8aa",
+                        activecolor="#ff6900",
                         bordercolor="rgba(255,255,255,0.08)",
                         borderwidth=1,
                         font=dict(color="#94a3b8", size=11),
@@ -1022,7 +1022,7 @@ if forecast_clicked:
                 hovermode="x unified",
                 hoverlabel=dict(
                     bgcolor="#0d1b2e",
-                    bordercolor="rgba(0,200,170,0.3)",
+                    bordercolor="rgba(255,105,0,0.3)",
                     font=dict(color="#e2e8f0", family="Inter")
                 ),
                 margin=dict(l=10, r=55, t=65, b=10),
@@ -1083,7 +1083,7 @@ if forecast_clicked:
                 ),
                 hoverlabel=dict(
                     bgcolor="#0d1b2e",
-                    bordercolor="rgba(0,200,170,0.3)",
+                    bordercolor="rgba(255,105,0,0.3)",
                     font=dict(color="#e2e8f0", family="Inter")
                 ),
                 margin=dict(l=10, r=10, t=20, b=10),
@@ -1108,7 +1108,7 @@ else:
     <div style="text-align:center; padding: 4rem 2rem; color: #334155;">
         <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.7;">🌫️</div>
         <div style="font-family:'Space Grotesk',sans-serif; font-size:1.1rem; color:#475569; font-weight:500;">
-            Select a city and date, then click <span style="color:#00c8aa">Forecast AQI</span>
+            Select a city and date, then click <span style="color:#ff6900">Forecast AQI</span>
         </div>
         <div style="font-size:0.85rem; color:#334155; margin-top:0.5rem;">
             Predictions powered by Meta Prophet time-series model
