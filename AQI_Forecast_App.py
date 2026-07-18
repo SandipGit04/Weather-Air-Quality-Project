@@ -113,10 +113,7 @@ html, body, [data-testid="stAppViewContainer"] {
     position: relative;
     z-index: 1;
 }
-
-.hero-title span {
-    color: #00c8aa;
-}
+.hero-title .accent { color: #4fd1c5; }
 
 .hero-subtitle {
     font-size: 1rem;
