@@ -100,7 +100,62 @@ html, body, [data-testid="stAppViewContainer"] {
     background: rgba(79,209,197,0.12); border: 1px solid rgba(79,209,197,0.3);
     color: #4fd1c5; font-size: 0.7rem; font-weight: 700;
     letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 1rem;
+    padding: 0.3rem 0.9rem; border-radius: 999px;
+}
+.page-hero-topline {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+    margin-bottom: 1rem;
+}
+.page-hero-nav-links {
+    display: flex; align-items: center; gap: 10px;
+    flex-wrap: wrap;
+}
+.aqi-nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: #ffffff !important;
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    text-decoration: none !important;
+    box-shadow: 0 2px 10px rgba(124,58,237,0.35);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    white-space: nowrap;
+}
+.aqi-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(124,58,237,0.5);
+    color: #ffffff !important;
+}
+/* ClimaSphere link - same amber/gold used on the AQI app, for consistency
+   across both apps (signals "combined / flagship" app) */
+.clima-nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: #ffffff !important;
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    text-decoration: none !important;
+    box-shadow: 0 2px 10px rgba(245,158,11,0.35);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    white-space: nowrap;
+}
+.clima-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(245,158,11,0.5);
+    color: #ffffff !important;
+}
+@media (max-width: 640px) {
+    .page-hero-topline { flex-direction: column; align-items: flex-start; }
+    .page-hero-nav-links { width: 100%; }
+    .aqi-nav-btn, .clima-nav-btn {
+        flex: 1 1 auto; justify-content: center;
+        font-size: 0.72rem; padding: 0.5rem 0.8rem;
+    }
 }
 .page-hero-title {
     font-family: 'Inter', sans-serif;
@@ -560,7 +615,17 @@ cities = sorted([
 # --------------------------------------------------------------
 st.html(f"""
 <div class="page-hero">
-    <div class="page-hero-badge">&#127749; India Weather Intelligence</div>
+    <div class="page-hero-topline">
+        <div class="page-hero-badge">&#127749; India Weather Intelligence</div>
+        <div class="page-hero-nav-links">
+            <a href="https://aqi-forecast-sys.streamlit.app/" target="_top" class="aqi-nav-btn">
+                &#127757; Open AQI Forecasting System &rarr;
+            </a>
+            <a href="https://climasphere-rust.vercel.app/" target="_top" class="clima-nav-btn">
+                &#127760; Open ClimaSphere &rarr;
+            </a>
+        </div>
+    </div>
     <h1 class="page-hero-title">🌦️ Weather <span class="accent">Forecasting</span> System</h1>
     <p class="page-hero-sub">
         Prophet-powered time-series forecasting &middot; {len(cities)} Indian cities &middot; Temperature, Humidity, Pressure &amp; Wind
