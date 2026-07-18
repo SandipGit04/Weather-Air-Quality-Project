@@ -957,6 +957,7 @@ with col3:
 # --------------------------------------------------------------
 # SUN CARD - animated, real-time sun position
 # --------------------------------------------------------------
+st.html('<div class="sun-card">')
 st.html('<div class="sec-head"><i class="fas fa-sun"></i> Sunrise &amp; Sunset</div>')
 
 sr, ss = today_data["sunrise"], today_data["sunset"]
@@ -989,44 +990,59 @@ sun_color = "#f0b95c" if is_daytime else "#5b6478"
 sun_glow  = "0.9" if is_daytime else "0.25"
 now_label = now_ist().strftime("%H:%M")
 
+
+# Smooth arc from sunrise (t=0) to sunset (t=1), peaking in the middle -
+# same shape as the old SVG path, just plotted with Plotly instead.
+t = np.linspace(0, 1, 60)
+arc_y_curve = np.sin(np.pi * t)  # 0 -> 1 -> 0
+ 
+fig_sun = go.Figure()
+ 
+# dashed baseline
+fig_sun.add_trace(go.Scatter(
+    x=[0, 1], y=[0, 0], mode="lines",
+    line=dict(color="rgba(255,255,255,0.08)", width=1),
+    hoverinfo="skip", showlegend=False,
+))
+ 
+# the arc itself
+fig_sun.add_trace(go.Scatter(
+    x=t, y=arc_y_curve, mode="lines",
+    line=dict(color="#f0b95c", width=2, dash="dot"),
+    hoverinfo="skip", showlegend=False,
+))
+ 
+# sunrise / sunset endpoint dots
+fig_sun.add_trace(go.Scatter(
+    x=[0, 1], y=[0, 0], mode="markers",
+    marker=dict(color="#f0b95c", size=8, opacity=0.7),
+    hoverinfo="skip", showlegend=False,
+))
+ 
+# current sun position (or resting mid-arc position for non-today views)
+fig_sun.add_trace(go.Scatter(
+    x=[progress], y=[np.sin(np.pi * progress)], mode="markers",
+    marker=dict(
+        color=sun_color, size=26,
+        line=dict(color=sun_color, width=1),
+        opacity=float(sun_glow),
+    ),
+    hoverinfo="skip", showlegend=False,
+))
+ 
+fig_sun.update_layout(
+    height=90,
+    margin=dict(l=10, r=10, t=10, b=10),
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+    xaxis=dict(visible=False, range=[-0.05, 1.05]),
+    yaxis=dict(visible=False, range=[-0.15, 1.25]),
+    showlegend=False,
+)
+ 
+
+st.plotly_chart(fig_sun, use_container_width=True, config={"staticPlot": True, "displayModeBar": False})
 st.html(f"""
-<div class="sun-card">
-    <svg viewBox="0 0 400 90" xmlns="http://www.w3.org/2000/svg" width="100%" height="80">
-        <defs>
-            <linearGradient id="arc" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#f0b95c" stop-opacity="0.15"/>
-                <stop offset="50%" stop-color="#f0b95c" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#f0b95c" stop-opacity="0.15"/>
-            </linearGradient>
-            <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="{sun_color}" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="{sun_color}" stop-opacity="0"/>
-            </radialGradient>
-        </defs>
-        <line x1="15" y1="72" x2="385" y2="72" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-        <path d="M 20 72 Q 200 5 380 72" fill="none" stroke="url(#arc)" stroke-width="2" stroke-dasharray="3 4"/>
-
-        <!-- animated sun with rays, matching reference style -->
-        <circle cx="{arc_x:.1f}" cy="{arc_y:.1f}" r="22" fill="url(#sunGlow)" opacity="{sun_glow}">
-            <animate attributeName="r" values="20;24;20" dur="3s" repeatCount="indefinite"/>
-        </circle>
-        <g transform="translate({arc_x:.1f},{arc_y:.1f})">
-            <g stroke="{sun_color}" stroke-width="2" stroke-linecap="round" opacity="{sun_glow}">
-                <line x1="0" y1="-14" x2="0" y2="-10"/>
-                <line x1="0" y1="10" x2="0" y2="14"/>
-                <line x1="-14" y1="0" x2="-10" y2="0"/>
-                <line x1="10" y1="0" x2="14" y2="0"/>
-                <line x1="-9.9" y1="-9.9" x2="-7.1" y2="-7.1"/>
-                <line x1="7.1" y1="7.1" x2="9.9" y2="9.9"/>
-                <line x1="9.9" y1="-9.9" x2="7.1" y2="-7.1"/>
-                <line x1="-7.1" y1="7.1" x2="-9.9" y2="9.9"/>
-            </g>
-            <circle cx="0" cy="0" r="8" fill="{sun_color}"/>
-        </g>
-
-        <circle cx="20" cy="72" r="4" fill="#f0b95c" opacity="0.7"/>
-        <circle cx="380" cy="72" r="4" fill="#f0b95c" opacity="0.7"/>
-    </svg>
     <div class="sun-times-row">
         <div class="sun-block"><div class="sun-lab">Sunrise</div><div class="sun-val">{sr}</div></div>
         <div class="sun-block">
@@ -1039,7 +1055,7 @@ st.html(f"""
     </div>
 </div>
 """)
-
+st.html('<div class="sun-card">')
 
 # --------------------------------------------------------------
 # APP FOOTER 
