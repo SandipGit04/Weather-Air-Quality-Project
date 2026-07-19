@@ -289,4 +289,4 @@ The fetch → clean → retrain → commit pipeline has been built and each stag
 
 ## 📄 License
 
-*No license file currently specified. Add one (e.g. MIT, Apache 2.0) if you intend for others to reuse or contribute to this code.*
+**[![MIT Lisence](https://github.com/SandipGit04/Weather-Air-Quality-Project/blob/main/LICENSE)**
