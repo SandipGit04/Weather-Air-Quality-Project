@@ -14,7 +14,7 @@
 | | |
 |---|---|
 | 🚀 **Live App** | [forecasting-platform.streamlit.app](https://forecasting-platform.streamlit.app/) |
-| 🌐 **ClimaSphere (companion site)** | *Coming soon* |
+| 🌐 **ClimaSphere** | [climasphere-rust.vercel.app](https://climasphere-rust.vercel.app/) |
 | 📂 **Repository** | [github.com/SandipGit04/Weather-Air-Quality-Project](https://github.com/SandipGit04/Weather-Air-Quality-Project) |
 
 ---
