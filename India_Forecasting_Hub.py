@@ -1021,6 +1021,7 @@ def render_aqi_app():
         # relative to its training data); otherwise fall back to the first
         # date the model can forecast at all.
         default_date = today_ist()
+        real_today = today_ist()
         if not (min_date <= default_date <= max_date):
             default_date = min_date
         selected_date = st.date_input(
@@ -1029,7 +1030,8 @@ def render_aqi_app():
             min_value=min_date,
             max_value=max_date
         )
-        st.caption(f" Today: {default_date.strftime('%d %b %Y')} · 📡 Latest available data for {city}: {last_known_date.strftime('%d %b %Y')} ·      forecasting {(default_date - last_known_date).days} days ahead to today")
+        st.caption(f" Today: {real_today.strftime('%d %b %Y')} · "f"📡 Latest available data for {city}: {last_known_date.strftime('%d %b %Y')} · "
+                   f"showing forecast for {default_date.strftime('%d %b %Y')}" + (" (next available forecast day)" if default_date != real_today else ""))
 
     with col_btn:
         st.markdown("<br>", unsafe_allow_html=True)
