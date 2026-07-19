@@ -70,7 +70,7 @@ Both systems are powered by **per-city Prophet models**, trained on historical w
 
 ### Platform-level features
 - **Unified navigation** — a landing page lets users choose a system, with a persistent switcher bar to jump between Weather and AQI without losing their place
-- **Fully automated ML pipeline** — see [Architecture](#architecture-and-automated-pipeline) below
+- **Fully automated ML pipeline** — see [Architecture]([#architecture-and-automated-pipeline](https://github.com/SandipGit04/Weather-Air-Quality-Project#%EF%B8%8F-architecture-and-automated-pipeline) below
 - **IST-aware throughout** — all "current time" and "today" logic is explicitly pinned to Indian Standard Time, independent of whatever timezone the hosting server runs in
 
 ---
