@@ -20,22 +20,22 @@
 ---
 
 ## 📸 Screenshots
-
-<!--
-  Add 1-3 screenshots here once available — a landing page shot and at
-  least one forecast result screen. GitHub READMEs with visuals get
-  noticeably more engagement from recruiters and visitors skimming a
-  profile, so this is worth prioritizing once you have clean screenshots.
-
-  Suggested embed format once images are added to an `Insights/` or
-  `screenshots/` folder in the repo:
-
-  ![Landing Page](Insights/landing_page.png)
-  ![Weather Forecast](Insights/weather_forecast.png)
-  ![AQI Forecast](Insights/aqi_forecast.png)
--->
-
-*Screenshots coming soon.*
+### Landing Page
+![**Landing**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/AQI/1.%20Landing%20Page.png)
+### AQI Forecasting System - Overview
+#### Header
+![**Header**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/AQI/2.%20AQI%20Forecasting%20System.png)
+#### Metric Cards
+![**Metric cards**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/AQI/3.%20Metric%20Cards.png)
+#### Seasonal Line Chart
+![**Seasonal Line Chart**](https://github.com/SandipGit04/Weather-Air-Quality-Project/blob/main/UI%20Screenshot/AQI/4.%20Forecasting%20Line%20Chart.png)
+### Weather Forecast System - Overview
+#### Header
+![**Header**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/Weather/1.%20Weather%20Forecasting%20System.png)
+#### Header Info Card
+![**Header Info Card**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/Weather/2.%20Header%20Info%20Card.png)
+#### 24 Hour Forecast
+![**24 Hour Forecast**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/Weather/3.%2024%20Hour%20Forecast.png)
 
 ---
 
@@ -78,32 +78,9 @@ Both systems are powered by **per-city Prophet models**, trained on historical w
 ## 🏗️ Architecture and Automated Pipeline
 
 A core design goal of this project was to avoid manual retraining entirely. The system is split into two halves that never block each other:
+## Forecasting Architecture
+![**Flow**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/Forecasting%20Architecture.png)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  SCHEDULED PIPELINE  (GitHub Actions — runs independently   │
-│  of site traffic, on a cron schedule)                       │
-│                                                               │
-│   Fetch_Data.py  ──►  Clean_Data.py  ──►  Training Scripts   │
-│   (pulls raw CSV      (cleans nulls,      (retrains every    │
-│    from backend)       dupes, applies      per-city Prophet  │
-│                         cascading fallback  model)           │
-│                         imputation)                          │
-│                              │                                │
-│                              ▼                                │
-│               Commits updated Datasets/Forecasting_Data.csv, │
-│               weather_models/*.pkl, aqi_models/*.json        │
-│               back to the repository                         │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│  LIVE STREAMLIT APP  (India_Forecasting_Hub.py)              │
-│                                                                │
-│   Only ever READS whatever model/data files currently exist  │
-│   on disk. It never trains anything itself, so page loads    │
-│   stay fast regardless of how many people visit at once.     │
-└─────────────────────────────────────────────────────────────┘
 ```
 
 **Why this split matters:** training happens on a clock, not on a page visit. This means the live app never blocks a user while a model retrains, and multiple visitors can't trigger overlapping/conflicting training runs — a real risk if training were ever tied to page loads instead.
@@ -263,16 +240,6 @@ The forecasting models need substantial historical data to train on, not just a 
 
 **Current testing status of the automated pipeline**
 The fetch → clean → retrain → commit pipeline has been built and each stage verified individually (schema validation, cleaning logic parity against the original notebooks, successful model file generation). A full, unattended production run on the live schedule is the next verification step, rather than something already confirmed over an extended period.
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Add ClimaSphere companion site link once deployed
-- [ ] Add project documentation / written report
-- [ ] Add presentation deck (PPT)
-- [ ] Benchmark Prophet against alternative forecasting approaches
-- [ ] Expand city coverage beyond the current 20
 
 ---
 
