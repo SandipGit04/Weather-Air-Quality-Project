@@ -1005,24 +1005,10 @@ def render_aqi_app():
 
     with col_city:
         city = st.selectbox("Select City", cities, label_visibility="visible")
-
-    # Anchor the selectable forecast range to THIS CITY'S actual last known
-    # data point (the model's own training history), not to the server's
-    # system clock. A model last trained through, say, 15 July can only
-    # meaningfully forecast from 16 July onward — regardless of what
-    # "today" happens to be if the data hasn't been refreshed since.
     last_known_date = load_city_model(city).history["ds"].max().date()
 
     with col_date:
         real_today = today_ist()
-        # The earliest selectable day must satisfy BOTH constraints:
-        #  1) strictly after the model's own last known data point
-        #     (a model trained through 15 July can't meaningfully
-        #     forecast for 15 July or earlier), AND
-        #  2) strictly after the REAL current calendar date (per product
-        #     decision: never offer today itself as a selectable option,
-        #     even if the model's data is perfectly up to date).
-        # Whichever of these two floors is LATER is the actual minimum.
         min_date = max(last_known_date + timedelta(days=1), real_today + timedelta(days=1))
         max_date = last_known_date + timedelta(days=365)
         # Safety guard: if the model is so stale that even its own 365-day
@@ -1048,7 +1034,6 @@ def render_aqi_app():
         st.caption(
             f"Showing forecast for **{selected_date.strftime('%d %b %Y')}** "
             f"({days_out} day{'s' if days_out != 1 else ''} from today) · "
-            f"📡 model data current through {last_known_date.strftime('%d %b %Y')}"
         )
 
     with col_btn:
@@ -2164,7 +2149,7 @@ def render_weather_app():
         freshness_note = (
             "Model data is up to date"
             if model_last_date >= viewed_date
-            else f"Model trained through {model_last_date.strftime('%d %b')} &middot; forecast for {viewed_date.strftime('%d %b')} is projected forward from that data"
+            else f"Forecast for {viewed_date.strftime('%d %b')} is projected forward from that data"
         )
         st.html(f'<div class="topbar-sub" style="margin: -8px 0 14px 2px;">{freshness_note}</div>')
 
