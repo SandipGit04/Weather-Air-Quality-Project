@@ -81,8 +81,6 @@ A core design goal of this project was to avoid manual retraining entirely. The 
 ## Forecasting Architecture
 ![**Flow**](https://raw.githubusercontent.com/SandipGit04/Weather-Air-Quality-Project/refs/heads/main/UI%20Screenshot/Forecasting%20Architecture.png)
 
-```
-
 **Why this split matters:** training happens on a clock, not on a page visit. This means the live app never blocks a user while a model retrains, and multiple visitors can't trigger overlapping/conflicting training runs — a real risk if training were ever tied to page loads instead.
 
 ### Data flow, in detail
@@ -212,6 +210,7 @@ If you want to run the retraining pipeline on your own fork:
 4. The workflow in `.github/workflows/pipeline.yml` will then run on its defined schedule, or can be triggered manually from the **Actions** tab.
 
 ---
+
 
 ## 📊 Data Source
 
