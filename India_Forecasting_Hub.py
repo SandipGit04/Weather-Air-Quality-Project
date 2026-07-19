@@ -1014,24 +1014,42 @@ def render_aqi_app():
     last_known_date = load_city_model(city).history["ds"].max().date()
 
     with col_date:
-        min_date = last_known_date + timedelta(days=1)
-        max_date = last_known_date + timedelta(days=365)
-        # Default to the real current IST date when it's actually forecastable
-        # (i.e. the model isn't so stale that "today" is still in the past
-        # relative to its training data); otherwise fall back to the first
-        # date the model can forecast at all.
-        default_date = today_ist()
         real_today = today_ist()
-        if not (min_date <= default_date <= max_date):
-            default_date = min_date
+        # The earliest selectable day must satisfy BOTH constraints:
+        #  1) strictly after the model's own last known data point
+        #     (a model trained through 15 July can't meaningfully
+        #     forecast for 15 July or earlier), AND
+        #  2) strictly after the REAL current calendar date (per product
+        #     decision: never offer today itself as a selectable option,
+        #     even if the model's data is perfectly up to date).
+        # Whichever of these two floors is LATER is the actual minimum.
+        min_date = max(last_known_date + timedelta(days=1), real_today + timedelta(days=1))
+        max_date = last_known_date + timedelta(days=365)
+        # Safety guard: if the model is so stale that even its own 365-day
+        # forecast horizon doesn't reach past the real-calendar minimum
+        # (e.g. the automated retraining pipeline has been failing for a
+        # long time), extend max_date so the picker doesn't crash with an
+        # invalid min > max range.
+        if min_date > max_date:
+            max_date = min_date
+            st.warning(
+                f"⚠️ Forecast data for {city} hasn't been refreshed in a while "
+                f"(model's data ends {last_known_date.strftime('%d %b %Y')}). "
+                f"Predictions beyond this point may be less reliable."
+            )
+        default_date = min_date
         selected_date = st.date_input(
             "Select Forecast Date",
             value=default_date,
             min_value=min_date,
             max_value=max_date
         )
-        st.caption(f" Today: {real_today.strftime('%d %b %Y')} · "f"📡 Latest available data for {city}: {last_known_date.strftime('%d %b %Y')} · "
-                   f"showing forecast for {default_date.strftime('%d %b %Y')}" + (" (next available forecast day)" if default_date != real_today else ""))
+        days_out = (selected_date - real_today).days
+        st.caption(
+            f"Showing forecast for **{selected_date.strftime('%d %b %Y')}** "
+            f"({days_out} day{'s' if days_out != 1 else ''} from today) · "
+            f"📡 model data current through {last_known_date.strftime('%d %b %Y')}"
+        )
 
     with col_btn:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -2090,7 +2108,10 @@ def render_weather_app():
     with st.spinner("Loading forecast..."):
         models = load_models(city)
         days_ahead = 6
-        real_today = now_ist().date()
+        # Forecast window now starts from TOMORROW (not today) per product
+        # decision: users should only be able to view/select forecasts for
+        # the next day onward, never the current day.
+        real_today = now_ist().date() + timedelta(days=1)
 
         temp_fc = predict_variable(models["Temperature"], real_today, days_ahead)
         hum_fc  = predict_variable(models["Humidity"], real_today, days_ahead)
@@ -2123,30 +2144,36 @@ def render_weather_app():
             "sunrise": sr, "sunset": ss,
         })
 
-    # Optional, additive-only touch: a quiet data-freshness note using the
-    # app's existing subtle-text style (same look as the topbar subtitle).
-    # Purely informational - doesn't alter layout, navigation, or any
-    # existing feature; safe to delete if not wanted.
-    if models["Temperature"] is not None:
-        model_last_date = models["Temperature"].history["ds"].max().date()
-        freshness_note = (
-            "Model data current as of today"
-            if model_last_date >= real_today
-            else f"Model trained through {model_last_date.strftime('%d %b')} &middot; forecast projected forward to today"
-        )
-        st.html(f'<div class="topbar-sub" style="margin: -8px 0 14px 2px;">{freshness_note}</div>')
-
     # Jump-to-day selector uses the REAL dates from daily[] (not independently
     # computed date.today() offsets), so labels always match the actual forecast
     # regardless of how far the model's training data extends.
-    jump_labels = ["Today"] + [d["date"].strftime("%A, %d %b") for d in daily[1:]]
+    # daily[0] is now TOMORROW (see real_today shift above), so label it
+    # accordingly rather than "Today".
+    jump_labels = ["Tomorrow"] + [d["date"].strftime("%A, %d %b") for d in daily[1:]]
     with col_jump:
         jump_choice = st.selectbox("Jump to day", jump_labels, label_visibility="visible")
     selected_day_idx = jump_labels.index(jump_choice)
 
+    # Data-freshness note - describes whatever day is actually being viewed
+    # right now (the Jump to day selection), not just the fixed forecast
+    # window's start date, so it stays meaningful regardless of which day
+    # the user picks.
+    if models["Temperature"] is not None:
+        model_last_date = models["Temperature"].history["ds"].max().date()
+        viewed_date = daily[selected_day_idx]["date"]
+        freshness_note = (
+            "Model data is up to date"
+            if model_last_date >= viewed_date
+            else f"Model trained through {model_last_date.strftime('%d %b')} &middot; forecast for {viewed_date.strftime('%d %b')} is projected forward from that data"
+        )
+        st.html(f'<div class="topbar-sub" style="margin: -8px 0 14px 2px;">{freshness_note}</div>')
+
     hourly_temp = predict_hourly_today(models["Temperature"], daily[selected_day_idx]["date"], 24)
     today_data = daily[selected_day_idx]
     today_str = today_data["date"].strftime("%A, %d %B %Y")
+    # Kept as-is (still means "index 0 / the default first entry") since
+    # this flag is referenced elsewhere in the render logic below; only its
+    # meaning shifted from "today" to "tomorrow", not its mechanics.
     is_showing_today = (selected_day_idx == 0)
 
     # --------------------------------------------------------------
@@ -2204,7 +2231,10 @@ def render_weather_app():
     rain_curve = base_rc * (0.55 + 0.45 * np.sin((hour_arr - 5) / 24 * 2 * np.pi - np.pi/2) ** 2)
     rain_curve = np.clip(rain_curve, 0, 95).round(0)
 
-    now_hour = min(now_ist().hour, 23) if is_showing_today else None
+    # No displayed day is ever the literal current calendar day anymore
+    # (the nearest selectable day is always tomorrow), so there is never a
+    # real "current hour" to mark on the hourly chart.
+    now_hour = None
 
     fig_hourly = go.Figure()
 
@@ -2278,7 +2308,7 @@ def render_weather_app():
     st.html("""
     <div class="chart-card-head">
         <div class="chart-card-title">6-Day Forecast</div>
-        <div class="chart-card-sub">High and low temperature trend from today.</div>
+        <div class="chart-card-sub">High and low temperature trend from tomorrow.</div>
     </div>
     """)
 
@@ -2289,7 +2319,7 @@ def render_weather_app():
     # --------------------------------------------------------------
     icon_row_html = '<div class="icon-day-row">'
     for i, d in enumerate(daily):
-        day_label = "Today" if i == 0 else d["date"].strftime("%a")
+        day_label = "Tomorrow" if i == 0 else d["date"].strftime("%a")
         icon = ICONS.get(d["icon_key"], "\u2600")
         active_cls = "icon-day-active" if i == 0 else ""
         icon_row_html += f"""
@@ -2335,7 +2365,7 @@ def render_weather_app():
         hovertemplate="%{x}<br>Low %{y:.1f}&deg;C<extra></extra>",
     ))
 
-    # Vertical marker on today (selected date)
+    # Vertical marker on the nearest displayed day (index 0, now tomorrow)
     fig_week.add_vline(
         x=today_idx, line=dict(color="rgba(255,255,255,0.3)", width=1.5, dash="dot"),
     )
@@ -2384,8 +2414,8 @@ def render_weather_app():
     """
 
     for i, d in enumerate(daily):
-        is_today = i == 0
-        day_name = "Today" if is_today else d["date"].strftime("%A")
+        is_today = i == 0  # "nearest displayed day" flag - still used for row highlight styling only
+        day_name = "Tomorrow" if is_today else d["date"].strftime("%A")
         date_label = d["date"].strftime("%d %b")
         icon = ICONS.get(d["icon_key"], "\u2600")
         low_val = lows_all[i]
@@ -2424,7 +2454,7 @@ def render_weather_app():
     # --------------------------------------------------------------
     # DETAIL PANELS
     # --------------------------------------------------------------
-    detail_label = "Today in Detail" if is_showing_today else f"{today_data['date'].strftime('%A')} in Detail"
+    detail_label = "Tomorrow in Detail" if is_showing_today else f"{today_data['date'].strftime('%A')} in Detail"
     st.html(f'<div class="sec-head"><i class="fas fa-chart-simple"></i> {detail_label}</div>')
 
     d = today_data
@@ -2487,7 +2517,12 @@ def render_weather_app():
     peak_min = sr_min + day_length // 2
     peak_label = f"{peak_min // 60:02d}:{peak_min % 60:02d}"
 
-    if is_showing_today:
+    # No displayed day is ever the literal current calendar day anymore
+    # (the nearest selectable day is always tomorrow), so the sun-arc
+    # widget always shows the static "Peak" position, never a live "Now"
+    # position along the arc.
+    is_live_today = False
+    if is_live_today:
         progress = (now_min - sr_min) / day_length
         progress = max(0.0, min(1.0, progress))
         is_daytime = sr_min <= now_min <= ss_min
@@ -2558,9 +2593,9 @@ def render_weather_app():
         <div class="sun-times-row">
             <div class="sun-block"><div class="sun-lab">Sunrise</div><div class="sun-val">{sr}</div></div>
             <div class="sun-block">
-                <div class="sun-lab">{'Now' if is_showing_today else 'Peak'}</div>
-                <div class="sun-val" style="color:{'#ff6900' if is_showing_today else "#dd1756"}; font-size: 20px;">
-                    {now_label if is_showing_today else peak_label}
+                <div class="sun-lab">{'Now' if is_live_today else 'Peak'}</div>
+                <div class="sun-val" style="color:{'#ff6900' if is_live_today else "#dd1756"}; font-size: 20px;">
+                    {now_label if is_live_today else peak_label}
                 </div>
             </div>
             <div class="sun-block"><div class="sun-lab">Sunset</div><div class="sun-val">{ss}</div></div>
